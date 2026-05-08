@@ -2,35 +2,37 @@ import { Project } from '@/types'
 
 export const projects: Project[] = [
   {
-    id: 'personal-homepage',
-    title: '个人主页',
-    description: '基于 React + TypeScript + Vite 构建的现代个人主页，支持暗色模式、博客系统、项目展示等功能。',
-    tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite'],
+    id: 'accrual-factor',
+    title: 'Accrual Factor Backtesting Framework',
+    description:
+      'Open-source A-share factor backtesting framework using tushare. Monthly rebalancing long/short portfolio achieving Sharpe 0.91 and cumulative return 14.6%.',
+    tags: ['Python', 'tushare', 'Quant'],
     category: 'fullstack',
-    repoUrl: 'https://github.com/kaniGAO/kaniGAO.github.io',
+    repoUrl: 'https://github.com/KaniGAO/accrual-factor-backtest',
   },
   {
-    id: 'task-manager',
-    title: '任务管理器',
-    description: '功能完整的任务管理应用，支持拖拽排序、分类筛选、数据统计等特性。',
-    tags: ['React', 'Node.js', 'MongoDB', 'Socket.io'],
+    id: 'alpha-research',
+    title: 'WorldQuant Alpha Factor Research',
+    description:
+      'Independent full-cycle alpha factor research. Validated 10+ factor signals across momentum, reversal, fundamental, and alternative data domains. IQC Gold Medal recipient.',
+    tags: ['Alpha', 'Finance', 'Research'],
+    category: 'backend',
+  },
+  {
+    id: 'sse-equity-db',
+    title: 'SSE Equity Trading Database',
+    description:
+      'Scalable database system for Shanghai Stock Exchange daily equity data. Includes REST API, stock clustering models, and mean-reversion strategy backtesting.',
+    tags: ['Python', 'Database', 'Stat-Arb'],
     category: 'fullstack',
-    demoUrl: '#',
     repoUrl: '#',
   },
   {
-    id: 'weather-dashboard',
-    title: '天气仪表盘',
-    description: '实时天气预报仪表盘，集成多城市切换、趋势图表、天气预警等功能。',
-    tags: ['Vue.js', 'ECharts', 'OpenWeather API'],
-    category: 'frontend',
-    demoUrl: '#',
-  },
-  {
-    id: 'code-snippet-tool',
-    title: '代码片段工具',
-    description: '开发者代码片段管理与分享工具，支持语法高亮、标签分类、快捷搜索。',
-    tags: ['TypeScript', 'React', 'IndexedDB'],
+    id: 'var-model',
+    title: 'VaR Risk Modeling Toolkit',
+    description:
+      'Value-at-Risk implementation with parametric, historical, and Monte Carlo methods. Features mathematical derivation, Python examples, and tornado chart sensitivity analysis.',
+    tags: ['Risk', 'Python', 'Monte Carlo'],
     category: 'tool',
     repoUrl: '#',
   },

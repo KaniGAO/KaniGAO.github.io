@@ -1,7 +1,42 @@
 import { BlogPost } from '@/types'
 
-// Blog posts are imported as raw markdown strings
-// This is a placeholder - in production, these would be actual .md files
+interface MatterResult {
+  data: Record<string, unknown>
+  content: string
+}
+
+/** 简单的 frontmatter 解析器，避免 gray-matter 的 Buffer 依赖 */
+function parseFrontmatter(raw: string): MatterResult {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)
+  if (!match) return { data: {}, content: raw }
+
+  const data: Record<string, unknown> = {}
+  const metaLines = match[1].split('\n')
+  for (const line of metaLines) {
+    const idx = line.indexOf(':')
+    if (idx === -1) continue
+    const key = line.slice(0, idx).trim()
+    let val = line.slice(idx + 1).trim()
+
+    // 处理数组值 [a, b] 或带引号的字符串
+    if (val.startsWith('[') && val.endsWith(']')) {
+      data[key] = val
+        .slice(1, -1)
+        .split(',')
+        .map((s) => s.trim().replace(/^['"]|['"]$/g, ''))
+        .filter(Boolean)
+      continue
+    }
+    // 去除引号
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1)
+    }
+    data[key] = val
+  }
+
+  return { data, content: match[2].trim() }
+}
+
 const blogModules = import.meta.glob('/src/content/blog/**/*.md', {
   query: '?raw',
   import: 'default',
@@ -9,46 +44,41 @@ const blogModules = import.meta.glob('/src/content/blog/**/*.md', {
 })
 
 function calculateReadingTime(content: string): string {
-  const wordsPerMinute = 200
-  const wordCount = content.split(/\s+/).length
-  const minutes = Math.ceil(wordCount / wordsPerMinute)
-  return `${minutes} min read`
+  const cnChars = (content.match(/[\u4e00-\u9fff]/g) || []).length
+  const enWords = content.replace(/[\u4e00-\u9fff]/g, '').split(/\s+/).length
+  const total = cnChars / 3 + enWords
+  const minutes = Math.max(1, Math.ceil(total / 200))
+  return `${minutes} 分钟阅读`
 }
 
 export function getAllPosts(): BlogPost[] {
-  return Object.entries(blogModules).map(([path, content]) => {
+  return Object.entries(blogModules).map(([path, raw]) => {
+    const content = raw as string
+    const { data, content: markdown } = parseFrontmatter(content)
+
     // Extract slug from path: /src/content/blog/YYYY-MM-DD-slug.md -> slug
     const match = path.match(/(\d{4}-\d{2}-\d{2})-(.+)\.md$/)
-    const date = match?.[1] || new Date().toISOString().split('T')[0]
+    const date: string =
+      (data.date as string) || match?.[1] || new Date().toISOString().split('T')[0]
     const slug = match?.[2] || 'untitled'
-    const textContent = content as string
-
-    // Extract excerpt (first paragraph or first ~150 chars)
-    const plainText = textContent
-      .replace(/^---[\s\S]*?---/, '')
-      .replace(/[#*`\[\]()]/g, '')
-      .trim()
-    const excerpt =
-      plainText.slice(0, 150) + (plainText.length > 150 ? '...' : '')
-
-    // Extract title from first H1 or use slug
-    const titleMatch = textContent.match(/^#\s+(.+)$/m)
-    const title = titleMatch?.[1] || slug.replace(/-/g, ' ')
-
-    // Extract tags from frontmatter or default
-    const tagsMatch = textContent.match(/tags:\s*\[([\s\S]*?)\]/)
-    const tags: string[] = tagsMatch
-      ? tagsMatch[1].split(',').map((t) => t.trim().replace(/['"]/g, ''))
-      : ['未分类']
+    const title = (data.title as string) || slug.replace(/-/g, ' ')
+    const tags: string[] = (Array.isArray(data.tags) ? data.tags : []) as string[]
+    const description: string =
+      (data.description as string) ||
+      markdown
+        .replace(/[#*`\[\]()>]/g, '')
+        .replace(/\n+/g, ' ')
+        .trim()
+        .slice(0, 200) + '...'
 
     return {
       slug,
       title,
       date,
-      excerpt,
+      excerpt: description,
       tags,
-      content: textContent,
-      readingTime: calculateReadingTime(textContent),
+      content: markdown,
+      readingTime: calculateReadingTime(markdown),
     }
   })
 }

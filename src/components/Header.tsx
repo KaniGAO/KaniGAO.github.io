@@ -35,7 +35,7 @@ export default function Header() {
           <button
             onClick={toggleTheme}
             className="ml-2 rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-            aria-label={isDark ? '切换到亮色模式' : '切换到暗色模式'}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {isDark ? (
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -53,7 +53,7 @@ export default function Header() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="rounded-lg p-2 md:hidden"
-          aria-label="打开菜单"
+          aria-label="Open menu"
         >
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             {mobileMenuOpen ? (
@@ -90,7 +90,7 @@ export default function Header() {
               }}
               className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400"
             >
-              {isDark ? '亮色模式' : '暗色模式'}
+              {isDark ? 'Light Mode' : 'Dark Mode'}
             </button>
           </div>
         </div>

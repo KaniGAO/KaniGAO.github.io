@@ -10,12 +10,12 @@ function FeaturedProjects() {
     <section className="py-16">
       <div className="container-custom">
         <div className="mb-10 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">精选项目</h2>
+          <h2 className="text-2xl font-bold">Featured Projects</h2>
           <Link
             to="/projects"
             className="text-sm font-medium text-primary-500 hover:text-primary-400"
           >
-            查看全部 &rarr;
+            View All &rarr;
           </Link>
         </div>
 
@@ -27,16 +27,15 @@ function FeaturedProjects() {
               className="card-base group p-6 animate-slide-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {/* Category Badge */}
               <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium mb-4 ${
                 project.category === 'fullstack' ? 'bg-purple-500/10 text-purple-500' :
                 project.category === 'frontend' ? 'bg-blue-500/10 text-blue-500' :
                 project.category === 'backend' ? 'bg-green-500/10 text-green-500' :
                 'bg-orange-500/10 text-orange-500'
               }`}>
-                {project.category === 'fullstack' ? '全栈' :
-                 project.category === 'frontend' ? '前端' :
-                 project.category === 'backend' ? '后端' : '工具'}
+                {project.category === 'fullstack' ? 'Full Stack' :
+                 project.category === 'frontend' ? 'Frontend' :
+                 project.category === 'backend' ? 'Backend' : 'Tool'}
               </span>
 
               <h3 className="mb-2 text-lg font-semibold group-hover:text-primary-500 transition-colors">
@@ -70,12 +69,12 @@ function LatestPosts() {
     <section className="border-t border-gray-200/10 py-16">
       <div className="container-custom">
         <div className="mb-10 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">最新文章</h2>
+          <h2 className="text-2xl font-bold">Latest Posts</h2>
           <Link
             to="/blog"
             className="text-sm font-medium text-primary-500 hover:text-primary-400"
           >
-            查看全部 &rarr;
+            View All &rarr;
           </Link>
         </div>
 

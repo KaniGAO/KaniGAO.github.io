@@ -24,7 +24,7 @@ export default function BlogPost() {
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          返回博客列表
+          Back to Blog
         </Link>
 
         {/* Article Header */}
@@ -71,7 +71,7 @@ export default function BlogPost() {
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            查看全部文章
+            View All Posts
           </Link>
         </div>
       </div>

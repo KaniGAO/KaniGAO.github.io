@@ -1,16 +1,17 @@
 import { SocialLink } from '@/types'
 
 export const NAV_LINKS = [
-  { label: '首页', path: '/' },
-  { label: '项目', path: '/projects' },
-  { label: '博客', path: '/blog' },
-  { label: '关于', path: '/about' },
+  { label: 'Home', path: '/' },
+  { label: 'Projects', path: '/projects' },
+  { label: 'Blog', path: '/blog' },
+  { label: 'Quant Lab', path: '/quant' },
+  { label: 'About', path: '/about' },
 ] as const
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     name: 'GitHub',
-    url: 'https://github.com/kaniGAO',
+    url: 'https://github.com/KaniGAO',
     icon: 'github',
   },
   {
@@ -21,7 +22,8 @@ export const SOCIAL_LINKS: SocialLink[] = [
 ]
 
 export const SITE_CONFIG = {
-  title: 'KaniGAO',
-  subtitle: '全栈开发者 / 创意构建者',
-  description: '热衷于用代码创造优雅的解决方案，探索技术与设计的交汇点。',
+  title: 'Kani GAO',
+  subtitle: 'Quantitative Finance & Risk Management | CUHK Undergraduate',
+  description:
+    'Turning data into insights and risk into opportunity — Quant sits at the intersection of finance and engineering.',
 } as const

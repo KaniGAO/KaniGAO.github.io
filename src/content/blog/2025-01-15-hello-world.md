@@ -1,6 +1,6 @@
 ---
 title: "Hello World - 我的第一篇博客"
-tags: ["介绍", "开始"]
+tags: ["Introduction", "Getting Started"]
 date: "2025-01-15"
 ---
 

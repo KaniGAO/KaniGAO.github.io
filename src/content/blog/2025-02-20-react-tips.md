@@ -1,6 +1,6 @@
 ---
 title: "React 开发技巧分享"
-tags: ["React", "TypeScript", "前端"]
+tags: ["React", "TypeScript", "Frontend"]
 date: "2025-02-20"
 ---
 

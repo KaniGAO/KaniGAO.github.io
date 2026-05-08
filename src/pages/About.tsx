@@ -6,10 +6,10 @@ function TimelineIcon({ type }: { type: string }) {
     work: 'bg-blue-500',
     education: 'bg-green-500',
     project: 'bg-purple-500',
-    other: 'bg-gray-500',
+    other: 'bg-orange-500',
   }
   return (
-    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${styles[type] || styles.other} shadow-lg`}>
+    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${styles[type] || 'bg-gray-500'} shadow-lg`}>
       <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         {type === 'work' && (
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.958 23.958 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -18,10 +18,10 @@ function TimelineIcon({ type }: { type: string }) {
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
         )}
         {type === 'project' && (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
         )}
         {!['work', 'education', 'project'].includes(type) && (
-          <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
         )}
       </svg>
     </div>
@@ -53,9 +53,9 @@ export default function About() {
       <div className="container-custom">
         {/* Page Header */}
         <div className="mb-16 text-center">
-          <h1 className="text-3xl font-bold sm:text-4xl">关于我</h1>
+          <h1 className="text-3xl font-bold sm:text-4xl">About Me</h1>
           <p className="mt-3 text-gray-600 dark:text-gray-400">
-            了解更多关于我的故事
+            Undergraduate student at CUHK, passionate about quantitative finance.
           </p>
         </div>
 
@@ -65,12 +65,16 @@ export default function About() {
             <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-blue-600 text-4xl font-bold text-white shadow-lg shadow-primary-500/30">
               K
             </div>
-            <h2 className="text-2xl font-bold">{SITE_CONFIG.title}</h2>
+            <h2 className="text-2xl font-bold">Kani GAO</h2>
             <p className="mt-1 text-primary-500">{SITE_CONFIG.subtitle}</p>
             <p className="mt-4 leading-relaxed text-gray-600 dark:text-gray-400">
               {SITE_CONFIG.description}
-              热衷于探索前沿技术，享受将创意转化为代码的过程。
-              相信好的产品源于对细节的执着追求，以及对用户体验的深度思考。
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-500">
+              Currently an undergraduate at The Chinese University of Hong Kong (CUHK),
+              majoring in Quantitative Finance and Risk Management Science with CGPA 3.7/4.0.
+              Passionate about alpha factor research, risk modeling, and algorithmic trading strategies.
+              I believe in the power of data-driven decision-making in finance.
             </p>
 
             {/* Contact */}
@@ -92,7 +96,7 @@ export default function About() {
 
         {/* Timeline */}
         <div className="mb-8 flex items-center gap-3">
-          <h2 className="text-2xl font-bold">经历</h2>
+          <h2 className="text-2xl font-bold">Experience</h2>
           <div className="flex-1 border-t border-gray-200 dark:border-gray-800" />
         </div>
 

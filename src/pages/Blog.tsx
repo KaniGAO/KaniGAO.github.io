@@ -28,9 +28,9 @@ export default function Blog() {
       <div className="container-custom">
         {/* Page Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-3xl font-bold sm:text-4xl">博客</h1>
+          <h1 className="text-3xl font-bold sm:text-4xl">Blog</h1>
           <p className="mt-3 text-gray-600 dark:text-gray-400">
-            技术思考与经验分享
+            Thoughts on quantitative finance, risk management, and technology.
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export default function Blog() {
             </svg>
             <input
               type="text"
-              placeholder="搜索文章..."
+              placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
@@ -105,12 +105,12 @@ export default function Blog() {
 
         {filtered.length === 0 && (
           <div className="py-20 text-center">
-            <p className="text-lg text-gray-500 dark:text-gray-400">没有找到相关文章</p>
+            <p className="text-lg text-gray-500 dark:text-gray-400">No posts found.</p>
             <button
               onClick={() => setSearchQuery('')}
               className="mt-3 text-sm text-primary-500 hover:underline"
             >
-              清除搜索
+              Clear search
             </button>
           </div>
         )}
