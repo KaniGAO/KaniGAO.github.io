@@ -1,0 +1,80 @@
+import { useParams, Link, Navigate } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
+import { getPostBySlug, getAllPosts } from '@/utils/blog'
+
+export default function BlogPost() {
+  const { slug } = useParams<{ slug: string }>()
+  const post = slug ? getPostBySlug(slug) : undefined
+
+  if (!post) {
+    // If post not found, redirect to blog list
+    return <Navigate to="/blog" replace />
+  }
+
+  return (
+    <article className="py-16">
+      <div className="container-custom">
+        {/* Back Button */}
+        <Link
+          to="/blog"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-gray-500 hover:text-primary-500 transition-colors"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          返回博客列表
+        </Link>
+
+        {/* Article Header */}
+        <header className="mx-auto max-w-3xl">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <time className="text-sm text-gray-500">{post.date}</time>
+            <span className="text-gray-300 dark:text-gray-700">|</span>
+            <span className="text-sm text-gray-500">{post.readingTime}</span>
+          </div>
+
+          <h1 className="text-3xl font-bold sm:text-4xl">{post.title}</h1>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-500"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </header>
+
+        {/* Divider */}
+        <div className="mx-auto mt-8 max-w-3xl border-t border-gray-200/50 dark:border-gray-800/50" />
+
+        {/* Markdown Content */}
+        <div className="prose-custom mx-auto mt-8 max-w-3xl">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeHighlight]}
+          >
+            {post.content}
+          </ReactMarkdown>
+        </div>
+
+        {/* Navigation Footer */}
+        <div className="mx-auto mt-12 max-w-3xl border-t border-gray-200/50 pt-8 dark:border-gray-800/50">
+          <Link
+            to="/blog"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary-500 px-6 py-3 font-medium text-white shadow-md shadow-primary-500/25 transition-all hover:bg-primary-600"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            查看全部文章
+          </Link>
+        </div>
+      </div>
+    </article>
+  )
+}
