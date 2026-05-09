@@ -10,6 +10,15 @@ export interface Project {
 
 export const projectsData: Project[] = [
   {
+    id: 6,
+    title: 'PM Review AI Agent',
+    tags: ['Python', 'FastAPI', 'Dify', 'AI Agent', 'Quant', 'Tushare'],
+    coverImage: 'https://picsum.photos/seed/pmreview1/300/200',
+    description:
+      'Automated daily review system built with Dify + FastAPI + Tushare. Pulls A-share industry leader data, calculates excess returns and PM rankings, invokes LLM (Qwen/DeepSeek) for professional review reports, and pushes structured Feishu card messages on a Cron schedule every trading day at 15:30.',
+    githubUrl: 'https://github.com/KaniGAO/pm-review-ai-agent',
+  },
+  {
     id: 1,
     title: 'A-Share Accrual Factor Backtesting Framework',
     tags: ['Python', 'tushare', 'Quant'],
