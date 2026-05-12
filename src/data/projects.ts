@@ -36,4 +36,13 @@ export const projects: Project[] = [
     category: 'tool',
     repoUrl: '#',
   },
+  {
+    id: 'cross-border-ai-analyst',
+    title: 'Cross-Border E-commerce AI Analyst (PoC)',
+    description:
+      'AI-powered cross-border e-commerce analyst built with Dify workflow + FastAPI + Feishu Bot. Automates multi-platform order analysis, profit attribution, inventory restocking recommendations, and daily report push via LLM (Qwen).',
+    tags: ['AI Agent', 'Dify', 'FastAPI', 'Cross-border E-commerce'],
+    category: 'fullstack',
+    repoUrl: 'https://github.com/KaniGAO/cross-border-ai-analyst-poc',
+  },
 ]
