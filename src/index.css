@@ -30,4 +30,77 @@
   .card-base {
     @apply rounded-xl border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300;
   }
+
+  /* Markdown 排版样式 */
+  .prose-custom {
+    @apply text-gray-700 dark:text-gray-300 leading-relaxed;
+  }
+
+  /* 段落间距 */
+  .prose-custom > * + * {
+    @apply mt-6;
+  }
+
+  /* 标题样式 */
+  .prose-custom h1, .prose-custom h2, .prose-custom h3,
+  .prose-custom h4, .prose-custom h5, .prose-custom h6 {
+    @apply font-bold text-gray-900 dark:text-white leading-tight;
+  }
+  .prose-custom h1 { @apply text-4xl mt-10 mb-6; }
+  .prose-custom h2 { @apply text-2xl mt-8 mb-4; }
+  .prose-custom h3 { @apply text-xl mt-6 mb-3; }
+  .prose-custom h4 { @apply text-lg mt-5 mb-2; }
+
+  /* 段落和列表 */
+  .prose-custom p { @apply mb-4; }
+  .prose-custom ul, .prose-custom ol { @apply pl-6 mb-4; }
+  .prose-custom li { @apply mb-2; }
+  .prose-custom ul { @apply list-disc; }
+  .prose-custom ol { @apply list-decimal; }
+
+  /* 强调文本 */
+  .prose-custom strong { @apply font-semibold text-gray-900 dark:text-white; }
+  .prose-custom em { @apply italic; }
+
+  /* 链接 */
+  .prose-custom a {
+    @apply text-blue-600 dark:text-blue-400 underline hover:no-underline;
+  }
+
+  /* 引用块 */
+  .prose-custom blockquote {
+    @apply border-l-4 border-blue-500 pl-4 italic text-gray-600 dark:text-gray-400 my-6;
+  }
+
+  /* 表格 */
+  .prose-custom table { 
+    @apply w-full border-collapse my-6 overflow-hidden rounded-lg;
+  }
+  .prose-custom th, .prose-custom td { 
+    @apply border border-gray-200 dark:border-gray-700 px-4 py-2 text-left;
+  }
+  .prose-custom th {
+    @apply bg-gray-50 dark:bg-gray-800 font-semibold text-gray-900 dark:text-white;
+  }
+
+  /* 代码 */
+  .prose-custom code {
+    @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-pink-600 dark:text-pink-400;
+  }
+  .prose-custom pre {
+    @apply my-6 overflow-x-auto rounded-lg;
+  }
+  .prose-custom pre code {
+    @apply bg-transparent p-0 text-inherit;
+  }
+
+  /* 分隔线 */
+  .prose-custom hr {
+    @apply my-8 border-t border-gray-200 dark:border-gray-700;
+  }
+
+  /* 图片 */
+  .prose-custom img {
+    @apply max-w-full h-auto rounded-lg shadow-md my-6;
+  }
 }
