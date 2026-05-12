@@ -64,4 +64,13 @@ export const projectsData: Project[] = [
     githubUrl: 'https://github.com/KaniGAO/KaniGAO.github.io',
     liveUrl: 'https://kanigao.github.io/',
   },
+  {
+    id: 7,
+    title: 'Cross-Border AI Analyst (PoC)',
+    tags: ['AI Agent', 'Dify', 'FastAPI', 'Feishu', 'Cross-border E-commerce', 'Agentic Workflow'],
+    coverImage: 'https://picsum.photos/seed/crossborder1/300/200',
+    description:
+      'Cross-border e-commerce AI analyst PoC built end-to-end in 8 hours. Powered by Dify workflow orchestration, FastAPI mock API, and Qwen LLM. Features 7 core skills: multi-platform data ingestion (Amazon/TikTok/1688), automated profit & loss calculation, profit attribution analysis, intelligent SKU restocking recommendations, structured morning report generation, anomaly order alerts, and Feishu bot push delivery. Demonstrates the full Agentic Workflow loop from raw data to actionable business intelligence.',
+    githubUrl: 'https://github.com/KaniGAO/cross-border-ai-analyst-poc',
+  },
 ]
