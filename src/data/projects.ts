@@ -45,4 +45,13 @@ export const projects: Project[] = [
     category: 'fullstack',
     repoUrl: 'https://github.com/KaniGAO/cross-border-ai-analyst-poc',
   },
+  {
+    id: 'bloomberg-stock-analysis',
+    title: 'Bloomberg Python Data Pipeline',
+    description:
+      'Financial data extraction pipeline using Bloomberg blpapi API. Collects stock fundamentals, historical prices, and GICS industry classification. Performs remote analysis on Google Colab with return/volatility/Sharpe metrics and visualization outputs.',
+    tags: ['Python', 'Bloomberg', 'Data Analysis', 'Finance'],
+    category: 'fullstack',
+    repoUrl: 'https://github.com/KaniGAO/bloomberg_stock_analysis',
+  },
 ]

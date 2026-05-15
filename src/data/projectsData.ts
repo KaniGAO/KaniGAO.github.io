@@ -73,4 +73,13 @@ export const projectsData: Project[] = [
       'Cross-border e-commerce AI analyst PoC built end-to-end in 8 hours. Powered by Dify workflow orchestration, FastAPI mock API, and Qwen LLM. Features 7 core skills: multi-platform data ingestion (Amazon/TikTok/1688), automated profit & loss calculation, profit attribution analysis, intelligent SKU restocking recommendations, structured morning report generation, anomaly order alerts, and Feishu bot push delivery. Demonstrates the full Agentic Workflow loop from raw data to actionable business intelligence.',
     githubUrl: 'https://github.com/KaniGAO/cross-border-ai-analyst-poc',
   },
+  {
+    id: 8,
+    title: 'Bloomberg Stock Data Pipeline',
+    tags: ['Python', 'Bloomberg', 'blpapi', 'Data Analysis', 'Google Colab', 'Finance'],
+    coverImage: 'https://picsum.photos/seed/bloomberg1/300/200',
+    description:
+      'Financial data extraction and analysis pipeline powered by Bloomberg official blpapi API. Built under a constrained school environment (no admin rights, Anaconda Python 3.6). Collects reference data (BDP) for fundamentals like P/E and market cap, historical daily prices (BDH) since 2023, and GICS industry classifications for 5 tech stocks. Syncs CSV outputs to Google Drive for remote analysis on Colab — computing annualized returns, volatility, Sharpe ratio, and generating cumulative return charts, correlation heatmaps, and volatility bar charts as Excel/PDF deliverables.',
+    githubUrl: 'https://github.com/KaniGAO/bloomberg_stock_analysis',
+  },
 ]
