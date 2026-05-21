@@ -54,4 +54,13 @@ export const projects: Project[] = [
     category: 'fullstack',
     repoUrl: 'https://github.com/KaniGAO/bloomberg_stock_analysis',
   },
+  {
+    id: 'alphastream',
+    title: 'AlphaStream — HK Multi-Factor Risk Model & Portfolio Optimizer',
+    description:
+      'Hong Kong stock market multi-factor risk model with minimum variance portfolio optimization. Features cross-sectional regression factor modeling (MKT CAP, PE, Volume), SLSQP-based weight optimization with constraints (long-only, 30% cap), and automated Excel report delivery via FastAPI + Gmail SMTP.',
+    tags: ['Python', 'Factor Model', 'Portfolio Optimization', 'Risk', 'HK Stocks'],
+    category: 'fullstack',
+    repoUrl: 'https://github.com/KaniGAO/AlphaStream',
+  },
 ]
