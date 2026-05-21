@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { ExternalLink } from 'lucide-react'
 import { projectsData, type Project } from '@/data/projectsData'
 
-const ALL_TAGS = ['All', 'Python', 'Quant', 'AI Agent', 'Dify', 'Bloomberg', 'Alpha Research', 'Factor', 'Finance', 'Database', 'Stat-Arb', 'Risk', 'Monte Carlo'] as const
+const ALL_TAGS = ['All', 'Python', 'Quant', 'AI Agent', 'Dify', 'Bloomberg', 'Alpha Research', 'Factor', 'Finance', 'Database', 'Stat-Arb', 'Risk', 'Monte Carlo', 'Factor Model', 'Portfolio Optimization'] as const
 
 export default function Projects() {
   const [activeTag, setActiveTag] = useState<string>('All')

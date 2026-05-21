@@ -82,4 +82,13 @@ export const projectsData: Project[] = [
       'Financial data extraction and analysis pipeline powered by Bloomberg official blpapi API. Built under a constrained school environment (no admin rights, Anaconda Python 3.6). Collects reference data (BDP) for fundamentals like P/E and market cap, historical daily prices (BDH) since 2023, and GICS industry classifications for 5 tech stocks. Syncs CSV outputs to Google Drive for remote analysis on Colab — computing annualized returns, volatility, Sharpe ratio, and generating cumulative return charts, correlation heatmaps, and volatility bar charts as Excel/PDF deliverables.',
     githubUrl: 'https://github.com/KaniGAO/bloomberg_stock_analysis',
   },
+  {
+    id: 9,
+    title: 'AlphaStream — HK Multi-Factor Risk & Portfolio Optimizer',
+    tags: ['Python', 'Factor Model', 'Portfolio Optimization', 'Risk Modeling', 'FastAPI', 'HK Stocks', 'Jupyter'],
+    coverImage: 'https://picsum.photos/seed/alphastream1/300/200',
+    description:
+      'End-to-end quantitative research pipeline for Hong Kong equities: Raw Data → Feature Engineering → Cross-Sectional Factor Regression → Minimum Variance Optimization → Automated Report Delivery. Processes ~440K rows of HK market data through winsorization (2.5%/97.5%) and Z-score normalization, runs daily factor回归 (MKT_CAP, P_E_LAGGED, VOLUME) to extract alpha residuals, then solves min w^TΣw via SLSQP under long-only + 30% single-weight cap constraints — achieving 7.27% annualized idiosyncratic volatility. Includes a FastAPI webhook trigger endpoint (`POST /trigger`) and Gmail SMTP auto-report system that embeds Base64 chart images into Excel attachments for one-click email delivery.',
+    githubUrl: 'https://github.com/KaniGAO/AlphaStream',
+  },
 ]
