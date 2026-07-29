@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { ExternalLink } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { projectsData, type Project } from '@/data/projectsData'
 
 const ALL_TAGS = ['All', 'Python', 'Quant', 'AI Agent', 'Dify', 'Bloomberg', 'Alpha Research', 'Factor', 'Finance', 'Database', 'Stat-Arb', 'Risk', 'Monte Carlo', 'Factor Model', 'Portfolio Optimization'] as const
@@ -106,6 +107,15 @@ function ProjectCard({ project }: { project: Project }) {
               <ExternalLink className="h-4 w-4" />
               <span>Live Demo</span>
             </a>
+          )}
+          {project.interactive && project.route && (
+            <Link
+              to={project.route}
+              className="flex items-center gap-1.5 text-sm font-medium text-indigo-500 transition-colors hover:text-indigo-400"
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span>Open Interactive</span>
+            </Link>
           )}
         </div>
       </div>

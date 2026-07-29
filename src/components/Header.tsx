@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { Menu, Moon, Sun, X } from 'lucide-react'
 import { NAV_LINKS, SITE_CONFIG } from '@/constants/siteConfig'
 import { useTheme } from '@/hooks/useTheme'
 
@@ -9,22 +10,25 @@ export default function Header() {
   const { isDark, toggleTheme } = useTheme()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-gray-200/10 bg-white/70 dark:bg-gray-950/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-black/[0.05] bg-white/55 backdrop-blur-xl dark:border-white/[0.06] dark:bg-[#04060d]/55">
       <nav className="container-custom flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold">
-          <span className="text-primary-500">{SITE_CONFIG.title}</span>
+        <Link to="/" className="group flex items-center gap-2.5">
+          <span className="h-1.5 w-1.5 bg-neon shadow-glow-red transition-transform duration-300 group-hover:scale-125" />
+          <span className="font-pixel text-sm tracking-wide text-slate-800 dark:text-slate-200">
+            {SITE_CONFIG.title}
+          </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden items-center gap-1 md:flex">
+        {/* Desktop Nav — quiet, hairline presence */}
+        <div className="hidden items-center gap-0.5 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-md px-3 py-1.5 text-[13px] font-medium tracking-wide transition-colors ${
                 location.pathname === link.path
-                  ? 'bg-primary-500/10 text-primary-500'
-                  : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  ? 'text-primary-500'
+                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white'
               }`}
             >
               {link.label}
@@ -34,17 +38,13 @@ export default function Header() {
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="ml-2 rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            className="ml-2 rounded-md p-1.5 text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {isDark ? (
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
+              <Sun className="h-4 w-4" strokeWidth={1.75} />
             ) : (
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
+              <Moon className="h-4 w-4" strokeWidth={1.75} />
             )}
           </button>
         </div>
@@ -52,22 +52,20 @@ export default function Header() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="rounded-lg p-2 md:hidden"
+          className="rounded-md p-1.5 text-gray-600 dark:text-gray-400 md:hidden"
           aria-label="Open menu"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            {mobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
+          {mobileMenuOpen ? (
+            <X className="h-5 w-5" strokeWidth={1.75} />
+          ) : (
+            <Menu className="h-5 w-5" strokeWidth={1.75} />
+          )}
         </button>
       </nav>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-gray-200/10 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl md:hidden">
+        <div className="border-t border-black/[0.05] bg-white/90 backdrop-blur-xl dark:border-white/[0.06] dark:bg-[#04060d]/90 md:hidden">
           <div className="container-custom space-y-1 py-4">
             {NAV_LINKS.map((link) => (
               <Link
@@ -76,7 +74,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`block rounded-lg px-4 py-2 text-sm font-medium ${
                   location.pathname === link.path
-                    ? 'bg-primary-500/10 text-primary-500'
+                    ? 'text-primary-500'
                     : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                 }`}
               >

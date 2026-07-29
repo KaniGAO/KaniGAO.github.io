@@ -63,4 +63,15 @@ export const projects: Project[] = [
     category: 'fullstack',
     repoUrl: 'https://github.com/KaniGAO/AlphaStream',
   },
+  {
+    id: 'bar-model',
+    title: 'Bar Model — Factor Covariance Matrix',
+    description:
+      'Interactive sub-page visualizing the cross-sectional factor covariance matrix (ECharts heatmap). A template for dropping in any of my analyses as a live, explorable page.',
+    tags: ['Python', 'Quant', 'Interactive', 'ECharts'],
+    category: 'tool',
+    interactive: true,
+    route: '/projects/bar-model',
+    repoUrl: '#',
+  },
 ]
