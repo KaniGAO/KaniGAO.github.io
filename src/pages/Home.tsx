@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import SceneBackdrop from '@/components/SceneBackdrop'
 import Reveal from '@/components/Reveal'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { projects } from '@/data/projects'
 import { getSortedPosts } from '@/utils/blog'
 
@@ -264,11 +265,13 @@ function LatestPosts() {
 }
 
 export default function Home() {
+  const prefersReduced = usePrefersReducedMotion()
   return (
     <>
       {/* Persistent 3D backdrop — fixed behind the page, fades/sinks as you
-          scroll past the Hero so the scene feels continuous, not cut off. */}
-      <SceneBackdrop />
+          scroll past the Hero so the scene feels continuous, not cut off.
+          Skipped entirely when the user prefers reduced motion (no rAF loops). */}
+      {!prefersReduced && <SceneBackdrop />}
       <Hero3D />
       {/* Content curtain: the scene dissolves from fully visible behind the
           Hero into a near-solid panel so the cards read clearly without a

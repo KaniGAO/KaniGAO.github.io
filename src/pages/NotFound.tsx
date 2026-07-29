@@ -5,11 +5,11 @@ export default function NotFound() {
     <div className="flex min-h-[70vh] items-center justify-center py-16">
       <div className="text-center">
         {/* 404 Number */}
-        <div className="text-8xl font-extrabold text-gray-200 dark:text-gray-800 sm:text-9xl">
+        <div className="text-8xl font-extrabold text-slate-200 dark:text-slate-800 sm:text-9xl">
           404
         </div>
         <h1 className="mt-4 text-2xl font-bold">Page Not Found</h1>
-        <p className="mt-3 text-gray-600 dark:text-gray-400">
+        <p className="mt-3 text-slate-600 dark:text-slate-400">
           Sorry, the page you are looking for does not exist or has been moved.
         </p>
 
@@ -26,7 +26,7 @@ export default function NotFound() {
           </Link>
           <Link
             to="/projects"
-            className="inline-flex items-center rounded-xl border border-gray-200 px-6 py-3 font-medium transition-all hover:border-primary-500/50 dark:border-gray-700"
+            className="inline-flex items-center rounded-xl border border-slate-200 px-6 py-3 font-medium transition-all hover:border-primary-500/50 dark:border-slate-700"
           >
             Browse Projects
           </Link>

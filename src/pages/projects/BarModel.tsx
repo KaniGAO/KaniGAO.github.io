@@ -83,7 +83,7 @@ export default function BarModel() {
           ← Back to Projects
         </Link>
         <h1 className="mt-4 text-3xl font-bold">Bar Model — Factor Covariance Matrix</h1>
-        <p className="mt-2 max-w-2xl text-gray-600 dark:text-gray-400">
+        <p className="mt-2 max-w-2xl text-slate-600 dark:text-slate-400">
           Interactive demo: this is a <strong>sub-page</strong> living under{' '}
           <code>/projects/bar-model</code>. Swap the placeholder matrix for your real
           Bar model analysis (or embed your existing HTML) — the same shell wraps
@@ -91,7 +91,7 @@ export default function BarModel() {
         </p>
         <div
           ref={ref}
-          className="mt-8 h-[520px] w-full rounded-xl border border-gray-200/60 bg-white/10 dark:bg-black/30"
+          className="mt-8 h-[520px] w-full rounded-xl border border-slate-200/60 bg-white/10 dark:bg-black/30"
         />
       </div>
     </div>

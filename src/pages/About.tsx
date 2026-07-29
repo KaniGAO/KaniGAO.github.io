@@ -1,4 +1,5 @@
 import { timeline } from '@/data/timeline'
+import PageHeader from '@/components/PageHeader'
 import { SOCIAL_LINKS, SITE_CONFIG } from '@/constants/siteConfig'
 import Reveal from '@/components/Reveal'
 
@@ -52,16 +53,12 @@ export default function About() {
   return (
     <div className="py-16">
       <div className="container-custom">
-        {/* Page Header */}
-        <div className="mb-16 text-center animate-fade-in">
-          <p className="eyebrow mb-3">Profile</p>
-          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
-            About Me
-          </h1>
-          <p className="mt-3 text-slate-600 dark:text-slate-400">
-            Undergraduate at CUHK, building at the edge of quant finance and AI.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="Profile"
+          title="About Me"
+          subtitle="Undergraduate at CUHK, building at the edge of quant finance and AI."
+          className="animate-fade-in"
+        />
 
         {/* Profile Section */}
         <div className="mx-auto mb-20 max-w-2xl">

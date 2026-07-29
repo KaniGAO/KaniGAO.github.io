@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { HashRouter, Routes, Route } from 'react-router-dom'
+import { ThemeProvider } from '@/hooks/useTheme'
 import Layout from '@/components/Layout'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import AiAssistant from '@/components/AiAssistant'
@@ -26,6 +27,7 @@ function PageLoader() {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <HashRouter>
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -45,5 +47,6 @@ export default function App() {
       </Suspense>
       <AiAssistant />
     </HashRouter>
+    </ThemeProvider>
   )
 }

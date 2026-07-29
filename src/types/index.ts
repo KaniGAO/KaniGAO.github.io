@@ -4,9 +4,9 @@ export interface Project {
   description: string
   tags: string[]
   category: 'frontend' | 'backend' | 'fullstack' | 'tool'
-  image?: string
-  demoUrl?: string
-  repoUrl?: string
+  githubUrl?: string
+  coverImage?: string
+  liveUrl?: string
   /** interactive sub-page (e.g. /projects/bar-model) instead of a plain card */
   interactive?: boolean
   /** route for the interactive sub-page */
