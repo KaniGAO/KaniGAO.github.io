@@ -21,13 +21,13 @@ function SocialIcon({ icon }: { icon: string }) {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200/10 bg-gray-50/50 dark:bg-gray-900/50">
+    <footer className="border-t border-slate-200/10 bg-slate-50/50 dark:bg-slate-900/50">
       <div className="container-custom py-12">
         <div className="flex flex-col items-center gap-6">
           {/* Brand */}
           <div className="text-center">
             <p className="text-lg font-semibold text-primary-500">{SITE_CONFIG.title}</p>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{SITE_CONFIG.subtitle}</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{SITE_CONFIG.subtitle}</p>
           </div>
 
           {/* Social Links */}
@@ -38,7 +38,7 @@ export default function Footer() {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
               >
                 <SocialIcon icon={link.icon} />
               </a>
@@ -46,7 +46,7 @@ export default function Footer() {
           </div>
 
           {/* Copyright */}
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-slate-400">
             &copy; {new Date().getFullYear()} {SITE_CONFIG.title}. All rights reserved.
           </p>
         </div>

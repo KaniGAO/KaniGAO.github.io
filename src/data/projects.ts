@@ -1,77 +1,102 @@
 import { Project } from '@/types'
 
+/**
+ * Single source of truth for all projects — consumed by both the Home
+ * featured list and the /projects page. Tags/categories are the only
+ * fields used for filtering; `githubUrl`/`liveUrl`/`route` drive the cards.
+ */
 export const projects: Project[] = [
   {
     id: 'accrual-factor',
-    title: 'Accrual Factor Backtesting Framework',
+    title: 'A-Share Accrual Factor Backtesting Framework',
     description:
-      'Open-source A-share factor backtesting framework using tushare. Monthly rebalancing long/short portfolio achieving Sharpe 0.91 and cumulative return 14.6%.',
+      'Open-source backtesting framework using tushare API for A-share financial data. Monthly rebalancing long/short portfolio (top/bottom 10%). Cumulative return 14.6%, Sharpe 0.91, max drawdown -9.7% from May 2023 to Mar 2026.',
     tags: ['Python', 'tushare', 'Quant'],
     category: 'fullstack',
-    repoUrl: 'https://github.com/KaniGAO/accrual-factor-backtest',
+    githubUrl: 'https://github.com/KaniGAO/accrual-factor-backtest',
   },
   {
     id: 'alpha-research',
-    title: 'WorldQuant Alpha Factor Research',
+    title: 'Alpha Factor Research @ WorldQuant',
     description:
-      'Independent full-cycle alpha factor research. Validated 10+ factor signals across momentum, reversal, fundamental, and alternative data domains. IQC Gold Medal recipient.',
-    tags: ['Alpha', 'Finance', 'Research'],
+      'Independent full-cycle alpha factor research at WorldQuant. Submitted and validated 10+ factor signals covering momentum, reversal, fundamental, and alternative data. Earned IQC Gold Medal.',
+    tags: ['Alpha Research', 'Factor', 'Finance'],
     category: 'backend',
+    githubUrl: '#',
   },
   {
     id: 'sse-equity-db',
-    title: 'SSE Equity Trading Database',
+    title: 'SSE Equity Trading Database & Stat-Arb Models',
     description:
-      'Scalable database system for Shanghai Stock Exchange daily equity data. Includes REST API, stock clustering models, and mean-reversion strategy backtesting.',
+      'Built scalable database system managing Shanghai Stock Exchange daily equity trading data with REST API integration. Developed correlation/clustering models and mean-reversion strategy backtesting for statistical arbitrage.',
     tags: ['Python', 'Database', 'Stat-Arb'],
     category: 'fullstack',
-    repoUrl: '#',
+    githubUrl: 'https://github.com/KaniGAO/sse-equity-db',
   },
   {
     id: 'var-model',
-    title: 'VaR Risk Modeling Toolkit',
+    title: 'VaR Model Implementation & Analysis',
     description:
-      'Value-at-Risk implementation with parametric, historical, and Monte Carlo methods. Features mathematical derivation, Python examples, and tornado chart sensitivity analysis.',
+      'Complete implementation of Value-at-Risk models: Parametric, Historical Simulation, and Monte Carlo methods. Includes mathematical derivation, Python code examples, and sensitivity analysis visualizations.',
     tags: ['Risk', 'Python', 'Monte Carlo'],
     category: 'tool',
-    repoUrl: '#',
+    githubUrl: '#',
   },
   {
     id: 'cross-border-ai-analyst',
-    title: 'Cross-Border E-commerce AI Analyst (PoC)',
+    title: 'Cross-Border AI Analyst (PoC)',
     description:
-      'AI-powered cross-border e-commerce analyst built with Dify workflow + FastAPI + Feishu Bot. Automates multi-platform order analysis, profit attribution, inventory restocking recommendations, and daily report push via LLM (Qwen).',
-    tags: ['AI Agent', 'Dify', 'FastAPI', 'Cross-border E-commerce'],
+      'Cross-border e-commerce AI analyst PoC built end-to-end in 8 hours. Powered by Dify workflow orchestration, FastAPI mock API, and Qwen LLM. Features 7 core skills: multi-platform data ingestion (Amazon/TikTok/1688), automated profit & loss calculation, profit attribution analysis, intelligent SKU restocking recommendations, structured morning report generation, anomaly order alerts, and Feishu bot push delivery. Demonstrates the full Agentic Workflow loop from raw data to actionable business intelligence.',
+    tags: ['AI Agent', 'Dify', 'FastAPI', 'Feishu', 'Cross-border E-commerce', 'Agentic Workflow'],
     category: 'fullstack',
-    repoUrl: 'https://github.com/KaniGAO/cross-border-ai-analyst-poc',
+    githubUrl: 'https://github.com/KaniGAO/cross-border-ai-analyst-poc',
   },
   {
     id: 'bloomberg-stock-analysis',
-    title: 'Bloomberg Python Data Pipeline',
+    title: 'Bloomberg Stock Data Pipeline',
     description:
-      'Financial data extraction pipeline using Bloomberg blpapi API. Collects stock fundamentals, historical prices, and GICS industry classification. Performs remote analysis on Google Colab with return/volatility/Sharpe metrics and visualization outputs.',
-    tags: ['Python', 'Bloomberg', 'Data Analysis', 'Finance'],
+      'Financial data extraction and analysis pipeline powered by Bloomberg official blpapi API. Built under a constrained school environment (no admin rights, Anaconda Python 3.6). Collects reference data (BDP) for fundamentals like P/E and market cap, historical daily prices (BDH) since 2023, and GICS industry classifications for 5 tech stocks. Syncs CSV outputs to Google Drive for remote analysis on Colab — computing annualized returns, volatility, Sharpe ratio, and generating cumulative return charts, correlation heatmaps, and volatility bar charts as Excel/PDF deliverables.',
+    tags: ['Python', 'Bloomberg', 'blpapi', 'Data Analysis', 'Google Colab', 'Finance'],
     category: 'fullstack',
-    repoUrl: 'https://github.com/KaniGAO/bloomberg_stock_analysis',
+    githubUrl: 'https://github.com/KaniGAO/bloomberg_stock_analysis',
   },
   {
     id: 'alphastream',
-    title: 'AlphaStream — HK Multi-Factor Risk Model & Portfolio Optimizer',
+    title: 'AlphaStream — HK Multi-Factor Risk & Portfolio Optimizer',
     description:
-      'Hong Kong stock market multi-factor risk model with minimum variance portfolio optimization. Features cross-sectional regression factor modeling (MKT CAP, PE, Volume), SLSQP-based weight optimization with constraints (long-only, 30% cap), and automated Excel report delivery via FastAPI + Gmail SMTP.',
-    tags: ['Python', 'Factor Model', 'Portfolio Optimization', 'Risk', 'HK Stocks'],
+      'End-to-end quantitative research pipeline for Hong Kong equities: Raw Data → Feature Engineering → Cross-Sectional Factor Regression → Minimum Variance Optimization → Automated Report Delivery. Processes ~440K rows of HK market data through winsorization (2.5%/97.5%) and Z-score normalization, runs daily factor regression (MKT_CAP, P_E_LAGGED, VOLUME) to extract alpha residuals, then solves min w^TΣw via SLSQP under long-only + 30% single-weight cap constraints — achieving 7.27% annualized idiosyncratic volatility. Includes a FastAPI webhook trigger endpoint (POST /trigger) and Gmail SMTP auto-report system that embeds Base64 chart images into Excel attachments for one-click email delivery.',
+    tags: ['Python', 'Factor Model', 'Portfolio Optimization', 'Risk Modeling', 'FastAPI', 'HK Stocks', 'Jupyter'],
     category: 'fullstack',
-    repoUrl: 'https://github.com/KaniGAO/AlphaStream',
+    githubUrl: 'https://github.com/KaniGAO/AlphaStream',
   },
   {
     id: 'bar-model',
     title: 'Bar Model — Factor Covariance Matrix',
     description:
-      'Interactive sub-page visualizing the cross-sectional factor covariance matrix (ECharts heatmap). A template for dropping in any of my analyses as a live, explorable page.',
+      'Interactive sub-page visualizing the cross-sectional factor covariance matrix. Built with ECharts; swap in your real Bar model analysis. Demonstrates the live, explorable project sub-page pattern.',
     tags: ['Python', 'Quant', 'Interactive', 'ECharts'],
     category: 'tool',
     interactive: true,
     route: '/projects/bar-model',
-    repoUrl: '#',
+    githubUrl: '#',
+  },
+  {
+    id: 'pm-review-ai-agent',
+    title: 'PM Review AI Agent',
+    description:
+      'Automated daily review system built with Dify + FastAPI + Tushare. Pulls A-share industry leader data, calculates excess returns and PM rankings, invokes LLM (Qwen/DeepSeek) for professional review reports, and pushes structured Feishu card messages on a Cron schedule every trading day at 15:30.',
+    tags: ['Python', 'FastAPI', 'Dify', 'AI Agent', 'Quant', 'Tushare'],
+    category: 'fullstack',
+    githubUrl: 'https://github.com/KaniGAO/pm-review-ai-agent',
+  },
+  {
+    id: 'personal-homepage',
+    title: 'Personal Homepage Portfolio',
+    description:
+      'Modern personal homepage built with React + TypeScript + Vite, featuring dark mode, blog system with Markdown rendering, ECharts quant lab dashboard, and project showcase with tag filtering.',
+    tags: ['React', 'TypeScript', 'Vite'],
+    category: 'frontend',
+    githubUrl: 'https://github.com/KaniGAO/KaniGAO.github.io',
+    liveUrl: 'https://kanigao.github.io/',
   },
 ]

@@ -1,50 +1,14 @@
 import { Canvas } from '@react-three/fiber'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense } from 'react'
 import { Environment, Lightformer } from '@react-three/drei'
+import { useTheme } from '@/hooks/useTheme'
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import HeadAvatar from './HeadAvatar'
 import ParticleField from './ParticleField'
 import FloatingDebris from './FloatingDebris'
 
-/** Watches the `dark` class on <html> so the 3D scene follows the sun/moon toggle. */
-function useIsDark() {
-  const [isDark, setIsDark] = useState(() =>
-    typeof document !== 'undefined'
-      ? document.documentElement.classList.contains('dark')
-      : true
-  )
-
-  useEffect(() => {
-    const root = document.documentElement
-    const observer = new MutationObserver(() => {
-      setIsDark(root.classList.contains('dark'))
-    })
-    observer.observe(root, { attributes: true, attributeFilter: ['class'] })
-    return () => observer.disconnect()
-  }, [])
-
-  return isDark
-}
-
-/** Respects the OS reduced-motion setting; disables scene animation loops. */
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(
-    () =>
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  )
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const onChange = () => setReduced(mq.matches)
-    mq.addEventListener('change', onChange)
-    return () => mq.removeEventListener('change', onChange)
-  }, [])
-
-  return reduced
-}
-
 export default function SceneCanvas() {
-  const isDark = useIsDark()
+  const { isDark } = useTheme()
   const reduced = usePrefersReducedMotion()
   const bg = isDark ? '#04060d' : '#edf2fa'
 

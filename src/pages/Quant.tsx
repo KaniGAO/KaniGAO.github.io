@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import PageHeader from '@/components/PageHeader'
 import * as echarts from 'echarts'
 import type { EChartsOption } from 'echarts'
 import { useECharts } from '@/hooks/useECharts'
@@ -15,8 +16,8 @@ interface StrategyPoint {
 const METRICS = [
   { label: 'Cumulative Return', value: '14.6%', color: 'text-green-500' },
   { label: 'Max Drawdown', value: '-9.7%', color: 'text-red-500' },
-  { label: 'Sharpe Ratio', value: '0.91', color: 'text-indigo-500' },
-  { label: 'Win Rate', value: '58.2%', color: 'text-cyan-500' },
+  { label: 'Sharpe Ratio', value: '0.91', color: 'text-primary-500' },
+  { label: 'Win Rate', value: '58.2%', color: 'text-primary-500' },
 ]
 
 export default function Quant() {
@@ -80,8 +81,8 @@ export default function Quant() {
           bottom: 0,
           borderColor: gridColor,
           backgroundColor: isDark ? '#1e293b' : '#f1f5f9',
-          fillerColor: isDark ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.2)',
-          handleStyle: { color: '#6366f1' },
+          fillerColor: isDark ? 'rgba(56,189,248,0.2)' : 'rgba(56,189,248,0.2)',
+          handleStyle: { color: '#38bdf8' },
         },
       ],
     }),
@@ -99,14 +100,14 @@ export default function Quant() {
           smooth: true,
           symbol: 'circle' as const,
           symbolSize: 4,
-          lineStyle: { width: 2, color: '#6366f1' },
+          lineStyle: { width: 2, color: '#38bdf8' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(99,102,241,0.35)' },
-              { offset: 1, color: 'rgba(99,102,241,0.02)' },
+              { offset: 0, color: 'rgba(56,189,248,0.35)' },
+              { offset: 1, color: 'rgba(56,189,248,0.02)' },
             ]),
           },
-          itemStyle: { color: '#6366f1' },
+          itemStyle: { color: '#38bdf8' },
         },
       ],
     }),
@@ -124,14 +125,14 @@ export default function Quant() {
           smooth: true,
           symbol: 'diamond' as const,
           symbolSize: 4,
-          lineStyle: { width: 2, color: '#f59e0b' },
+          lineStyle: { width: 2, color: '#f5b544' },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: 'rgba(245,158,11,0.3)' },
-              { offset: 1, color: 'rgba(245,158,11,0.02)' },
+              { offset: 0, color: 'rgba(245,181,68,0.3)' },
+              { offset: 1, color: 'rgba(245,181,68,0.02)' },
             ]),
           },
-          itemStyle: { color: '#f59e0b' },
+          itemStyle: { color: '#f5b544' },
         },
       ],
     }),
@@ -144,27 +145,25 @@ export default function Quant() {
   return (
     <div className="py-16">
       <div className="container-custom">
-        {/* Page Header */}
-        <div className="mb-12 text-center">
-          <h1 className="text-3xl font-bold sm:text-4xl">Quant Lab</h1>
-          <p className="mt-3 text-gray-600 dark:text-gray-400">
-            Backtesting results and key performance metrics analysis.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="Quant Lab"
+          title="Quant Lab"
+          subtitle="Backtesting results and key performance metrics analysis."
+        />
 
         {/* Charts */}
         <div className="mb-12 grid gap-8 lg:grid-cols-2">
           {/* Left / Top: Strategy NAV */}
-          <div className="rounded-xl border border-gray-200/50 bg-white/50 p-4 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/50">
-            <h3 className="mb-3 text-center text-sm font-semibold uppercase tracking-wide text-gray-500">
+          <div className="card-base p-4">
+            <h3 className="mb-3 text-center text-sm font-semibold uppercase tracking-wide text-slate-500">
               Strategy NAV Curve
             </h3>
             <div ref={navRef} style={{ width: '100%', height: '340px' }} />
           </div>
 
           {/* Right / Bottom: Benchmark NAV */}
-          <div className="rounded-xl border border-gray-200/50 bg-white/50 p-4 backdrop-blur-sm dark:border-gray-700/50 dark:bg-gray-900/50">
-            <h3 className="mb-3 text-center text-sm font-semibold uppercase tracking-wide text-gray-500">
+          <div className="card-base p-4">
+            <h3 className="mb-3 text-center text-sm font-semibold uppercase tracking-wide text-slate-500">
               Benchmark NAV (CSI 300)
             </h3>
             <div ref={benchRef} style={{ width: '100%', height: '340px' }} />
@@ -176,14 +175,14 @@ export default function Quant() {
           <h3 className="mb-4 text-center text-lg font-semibold">
             Key Performance Metrics
           </h3>
-          <div className="overflow-hidden rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+          <div className="overflow-hidden rounded-xl border border-slate-200/50 dark:border-white/10">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200/50 bg-gray-50 dark:border-gray-700/50 dark:bg-gray-800/50">
-                  <th className="px-6 py-3 text-left font-medium text-gray-500">
+                <tr className="border-b border-slate-200/50 bg-slate-50 dark:border-white/10 dark:bg-white/5">
+                  <th className="px-6 py-3 text-left font-medium text-slate-500">
                     Metric
                   </th>
-                  <th className="px-6 py-3 text-left font-medium text-gray-500">
+                  <th className="px-6 py-3 text-left font-medium text-slate-500">
                     Value
                   </th>
                 </tr>
@@ -192,13 +191,13 @@ export default function Quant() {
                 {METRICS.map((metric, i) => (
                   <tr
                     key={metric.label}
-                    className={`border-b border-gray-200/50 transition-colors hover:bg-gray-50 dark:border-gray-700/50 dark:hover:bg-gray-800/30 ${
+                    className={`border-b border-slate-200/50 transition-colors hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/[0.04] ${
                       i % 2 === 0
-                        ? 'bg-white dark:bg-gray-900/30'
-                        : 'bg-gray-50/50 dark:bg-gray-800/20'
+                        ? 'bg-white dark:bg-transparent'
+                        : 'bg-slate-50/50 dark:bg-white/[0.02]'
                     }`}
                   >
-                    <td className="px-6 py-3.5 font-medium text-gray-700 dark:text-gray-300">
+                    <td className="px-6 py-3.5 font-medium text-slate-700 dark:text-slate-300">
                       {metric.label}
                     </td>
                     <td className={`px-6 py-3.5 font-semibold ${metric.color}`}>
@@ -209,7 +208,7 @@ export default function Quant() {
               </tbody>
             </table>
           </div>
-          <p className="mt-4 text-center text-xs text-gray-400">
+          <p className="mt-4 text-center text-xs text-slate-400">
             * Metrics are from simulated backtesting sample data, not actual performance.
           </p>
         </div>

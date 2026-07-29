@@ -28,7 +28,7 @@ export default function Header() {
               className={`rounded-md px-3 py-1.5 text-[13px] font-medium tracking-wide transition-colors ${
                 location.pathname === link.path
                   ? 'text-primary-500'
-                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white'
+                  : 'text-slate-500 hover:text-slate-900 dark:text-slate-500 dark:hover:text-white'
               }`}
             >
               {link.label}
@@ -38,7 +38,7 @@ export default function Header() {
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="ml-2 rounded-md p-1.5 text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
+            className="ml-2 rounded-md p-1.5 text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-500 dark:hover:text-white"
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {isDark ? (
@@ -52,7 +52,7 @@ export default function Header() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="rounded-md p-1.5 text-gray-600 dark:text-gray-400 md:hidden"
+          className="rounded-md p-1.5 text-slate-600 dark:text-slate-400 md:hidden"
           aria-label="Open menu"
         >
           {mobileMenuOpen ? (
@@ -75,7 +75,7 @@ export default function Header() {
                 className={`block rounded-lg px-4 py-2 text-sm font-medium ${
                   location.pathname === link.path
                     ? 'text-primary-500'
-                    : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                 }`}
               >
                 {link.label}
@@ -86,7 +86,7 @@ export default function Header() {
                 toggleTheme()
                 setMobileMenuOpen(false)
               }}
-              className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400"
+              className="flex w-full items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400"
             >
               {isDark ? 'Light Mode' : 'Dark Mode'}
             </button>
