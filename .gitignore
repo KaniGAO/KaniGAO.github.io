@@ -31,8 +31,5 @@ lerna-debug.log*
 .env.local
 .env.*.local
 
-# Build artifacts
-*.tsbuildinfo
-
-# Model backups
-*.glb.bak
+# IDE / agent artifacts
+.codebuddy/
