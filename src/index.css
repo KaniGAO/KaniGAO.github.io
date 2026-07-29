@@ -17,9 +17,34 @@
   }
 
   ::selection {
-    background-color: rgba(14, 165, 233, 0.3);
+    background-color: rgba(56, 189, 248, 0.3);
     color: inherit;
   }
+
+  /* Respect reduced-motion preference (quality floor) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@keyframes grainShift {
+  0% { background-position: 0 0; }
+  25% { background-position: -68px 42px; }
+  50% { background-position: 34px -74px; }
+  75% { background-position: -46px -28px; }
+  100% { background-position: 58px 66px; }
+}
+
+@keyframes scanDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 120px; }
 }
 
 @layer components {
@@ -27,8 +52,173 @@
     @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
+  /* Card: refined glass panel with hairline border, quiet by default,
+     lifts only on hover so the 3D head stays the only loud element. */
   .card-base {
-    @apply rounded-xl border border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300;
+    @apply relative rounded-2xl border border-slate-200/70 bg-white/70 dark:border-white/[0.06] dark:bg-white/[0.03] backdrop-blur-md shadow-card transition-all duration-300;
+  }
+  .card-base:hover {
+    @apply -translate-y-1 border-primary-400/50 dark:border-primary-400/30 shadow-glow;
+  }
+
+  /* Display type treatment */
+  .font-display {
+    font-family: 'Space Grotesk', Inter, system-ui, sans-serif;
+  }
+
+  /* Neon glass card: semi-transparent panel, glowing hairline edge,
+     faint neon-red corner bleed — dark-immersive, used for project rows. */
+  .card-neon {
+    @apply relative overflow-hidden rounded-xl border border-slate-200/70 bg-white/70 backdrop-blur-md shadow-card transition-all duration-500;
+    @apply dark:border-white/[0.08] dark:bg-white/[0.025] dark:shadow-none;
+  }
+  .card-neon::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(56, 189, 248, 0.35) 0%,
+      transparent 30%,
+      transparent 70%,
+      rgba(255, 45, 79, 0.3) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+  .card-neon:hover {
+    @apply -translate-y-0.5 dark:border-white/[0.14] dark:bg-white/[0.045];
+    box-shadow:
+      0 0 0 1px rgba(56, 189, 248, 0.08),
+      0 12px 48px -16px rgba(56, 189, 248, 0.28),
+      0 4px 24px -8px rgba(255, 45, 79, 0.12);
+  }
+  .card-neon:hover::before {
+    opacity: 1;
+  }
+
+  /* ---------- Immersive FX overlays (dark mode only) ---------- */
+
+  /* Film grain: SVG turbulence noise jumping in discrete steps */
+  .fx-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    opacity: 0;
+    animation: grainShift 0.9s steps(4) infinite;
+  }
+  .dark .fx-grain {
+    opacity: 0.05;
+  }
+
+  /* Scanlines: fine horizontal CRT lines, slow downward drift */
+  .fx-scanlines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0, 0, 0, 0.22) 4px
+    );
+    opacity: 0;
+    animation: scanDrift 14s linear infinite;
+  }
+  .dark .fx-scanlines {
+    opacity: 0.32;
+  }
+
+  /* Vignette: pulls the eye to center, deepens the void at edges */
+  .fx-vignette {
+    background: radial-gradient(
+      ellipse 90% 70% at 50% 42%,
+      transparent 52%,
+      rgba(2, 4, 10, 0.55) 100%
+    );
+    opacity: 0;
+  }
+  .dark .fx-vignette {
+    opacity: 1;
+  }
+
+  /* Eyebrow / section label — monospace, encodes a real category not decoration */
+  .eyebrow {
+    @apply font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary-500/80;
+  }
+
+  /* Gradient display text */
+  .text-gradient {
+    @apply bg-gradient-to-br from-white via-slate-100 to-primary-300 dark:from-white dark:via-slate-100 dark:to-primary-300;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .text-gradient-ink {
+    @apply bg-gradient-to-br from-[#0b1220] via-[#1e293b] to-primary-600;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Instrument-panel grid: faint graph-paper lines, themed not decorative */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(100, 116, 139, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(100, 116, 139, 0.1) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .bg-grid-dark {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  /* Radial halo behind the 3D head — a SOFT WHITE ambient glow (not blue)
+     that travels WITH the head (lives inside SceneBackdrop, fades on scroll),
+     so it never betrays itself as a coloured disc on the black page. */
+  .halo {
+    background: radial-gradient(
+      circle at center,
+      rgba(228, 234, 245, 0.26) 0%,
+      rgba(228, 234, 245, 0.09) 38%,
+      transparent 70%
+    );
+  }
+
+  /* Continuous page light field — the page's single light source made
+     visible: a SOFT WHITE radial from the RIGHT (now neutral, not blue) and a
+     neon-red radial from the LEFT, over a base that fades from clear at top to
+     near-solid below. Used as the content "curtain" so hero and project rows
+     read as one lit space. Radials first = painted on top of the base. */
+  .page-light {
+    background-image:
+      radial-gradient(90vmax 90vmax at 88% -5%, rgba(228, 234, 245, 0.18) 0%, rgba(228, 234, 245, 0.06) 28%, transparent 58%),
+      radial-gradient(80vmax 80vmax at 2% 105%, rgba(255, 45, 79, 0.15) 0%, rgba(255, 45, 79, 0.05) 30%, transparent 62%),
+      linear-gradient(to bottom, rgba(238, 242, 250, 0) 0%, rgba(238, 242, 250, 0.80) 40%, rgba(238, 242, 250, 0.95) 100%);
+  }
+  .dark .page-light {
+    background-image:
+      radial-gradient(90vmax 90vmax at 88% -5%, rgba(228, 234, 245, 0.15) 0%, rgba(228, 234, 245, 0.05) 28%, transparent 58%),
+      radial-gradient(80vmax 80vmax at 2% 105%, rgba(255, 45, 79, 0.18) 0%, rgba(255, 45, 79, 0.06) 32%, transparent 62%),
+      linear-gradient(to bottom, rgba(4, 6, 13, 0) 0%, rgba(4, 6, 13, 0.82) 42%, rgba(4, 6, 13, 0.95) 100%);
+  }
+
+  /* Reveal-on-scroll base state; .is-visible flips it (driven by Reveal.tsx) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
   }
 
   /* Markdown 排版样式 */

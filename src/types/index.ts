@@ -7,6 +7,10 @@ export interface Project {
   image?: string
   demoUrl?: string
   repoUrl?: string
+  /** interactive sub-page (e.g. /projects/bar-model) instead of a plain card */
+  interactive?: boolean
+  /** route for the interactive sub-page */
+  route?: string
 }
 
 export interface Skill {

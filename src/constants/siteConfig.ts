@@ -3,8 +3,10 @@ import { SocialLink } from '@/types'
 export const NAV_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'Projects', path: '/projects' },
-  { label: 'Blog', path: '/blog' },
+  { label: 'Tools', path: '/tools' },
+  { label: 'Agent', path: '/agent' },
   { label: 'Quant Lab', path: '/quant' },
+  { label: 'Blog', path: '/blog' },
   { label: 'About', path: '/about' },
 ] as const
 

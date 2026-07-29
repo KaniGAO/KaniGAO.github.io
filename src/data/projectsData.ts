@@ -6,6 +6,10 @@ export interface Project {
   description: string;
   githubUrl: string;
   liveUrl?: string;
+  /** interactive sub-page (e.g. /projects/bar-model) instead of a plain card */
+  interactive?: boolean;
+  /** route for the interactive sub-page */
+  route?: string;
 }
 
 export const projectsData: Project[] = [
@@ -90,5 +94,16 @@ export const projectsData: Project[] = [
     description:
       'End-to-end quantitative research pipeline for Hong Kong equities: Raw Data → Feature Engineering → Cross-Sectional Factor Regression → Minimum Variance Optimization → Automated Report Delivery. Processes ~440K rows of HK market data through winsorization (2.5%/97.5%) and Z-score normalization, runs daily factor回归 (MKT_CAP, P_E_LAGGED, VOLUME) to extract alpha residuals, then solves min w^TΣw via SLSQP under long-only + 30% single-weight cap constraints — achieving 7.27% annualized idiosyncratic volatility. Includes a FastAPI webhook trigger endpoint (`POST /trigger`) and Gmail SMTP auto-report system that embeds Base64 chart images into Excel attachments for one-click email delivery.',
     githubUrl: 'https://github.com/KaniGAO/AlphaStream',
+  },
+  {
+    id: 10,
+    title: 'Bar Model — Factor Covariance Matrix',
+    tags: ['Python', 'Quant', 'Interactive', 'ECharts'],
+    coverImage: 'https://picsum.photos/seed/barmodel1/300/200',
+    description:
+      'Interactive sub-page visualizing the cross-sectional factor covariance matrix. Built with ECharts; swap in your real Bar model analysis. Demonstrates the live, explorable project sub-page pattern.',
+    githubUrl: '#',
+    interactive: true,
+    route: '/projects/bar-model',
   },
 ]

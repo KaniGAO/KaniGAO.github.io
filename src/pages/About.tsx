@@ -1,15 +1,16 @@
 import { timeline } from '@/data/timeline'
 import { SOCIAL_LINKS, SITE_CONFIG } from '@/constants/siteConfig'
+import Reveal from '@/components/Reveal'
 
 function TimelineIcon({ type }: { type: string }) {
   const styles: Record<string, string> = {
-    work: 'bg-blue-500',
-    education: 'bg-green-500',
-    project: 'bg-purple-500',
-    other: 'bg-orange-500',
+    work: 'bg-primary-500',
+    education: 'bg-signal',
+    project: 'bg-primary-400',
+    other: 'bg-slate-500',
   }
   return (
-    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${styles[type] || 'bg-gray-500'} shadow-lg`}>
+    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${styles[type] || 'bg-slate-500'} shadow-glow`}>
       <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         {type === 'work' && (
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.958 23.958 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -52,25 +53,30 @@ export default function About() {
     <div className="py-16">
       <div className="container-custom">
         {/* Page Header */}
-        <div className="mb-16 text-center">
-          <h1 className="text-3xl font-bold sm:text-4xl">About Me</h1>
-          <p className="mt-3 text-gray-600 dark:text-gray-400">
-            Undergraduate student at CUHK, passionate about quantitative finance.
+        <div className="mb-16 text-center animate-fade-in">
+          <p className="eyebrow mb-3">Profile</p>
+          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            About Me
+          </h1>
+          <p className="mt-3 text-slate-600 dark:text-slate-400">
+            Undergraduate at CUHK, building at the edge of quant finance and AI.
           </p>
         </div>
 
         {/* Profile Section */}
         <div className="mx-auto mb-20 max-w-2xl">
           <div className="card-base p-8 text-center animate-fade-in">
-            <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-blue-600 text-4xl font-bold text-white shadow-lg shadow-primary-500/30">
+            <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 font-display text-4xl font-bold text-white shadow-glow">
               K
             </div>
-            <h2 className="text-2xl font-bold">Kani GAO</h2>
-            <p className="mt-1 text-primary-500">{SITE_CONFIG.subtitle}</p>
-            <p className="mt-4 leading-relaxed text-gray-600 dark:text-gray-400">
+            <h2 className="font-display text-2xl font-bold tracking-tight">Kani GAO</h2>
+            <p className="mt-1 font-mono text-xs uppercase tracking-[0.16em] text-primary-500">
+              {SITE_CONFIG.subtitle}
+            </p>
+            <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-400">
               {SITE_CONFIG.description}
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-500">
+            <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-500">
               Currently an undergraduate at The Chinese University of Hong Kong (CUHK),
               majoring in Quantitative Finance and Risk Management Science with CGPA 3.7/4.0.
               Passionate about alpha factor research, risk modeling, and algorithmic trading strategies.
@@ -85,7 +91,7 @@ export default function About() {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-primary-500 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
+                  className="group rounded-xl border border-slate-200 bg-white p-4 text-slate-500 transition-all hover:-translate-y-0.5 hover:border-primary-400 hover:text-primary-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-400 dark:hover:text-primary-300"
                 >
                   <SocialIcon icon={link.icon} />
                 </a>
@@ -96,28 +102,30 @@ export default function About() {
 
         {/* Timeline */}
         <div className="mb-8 flex items-center gap-3">
-          <h2 className="text-2xl font-bold">Experience</h2>
-          <div className="flex-1 border-t border-gray-200 dark:border-gray-800" />
+          <h2 className="font-display text-2xl font-bold tracking-tight">Experience</h2>
+          <div className="flex-1 border-t border-slate-200 dark:border-white/[0.08]" />
         </div>
 
         <div className="relative mx-auto max-w-2xl">
           {/* Timeline Line */}
-          <div className="absolute left-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-primary-500 via-purple-500 to-transparent" />
+          <div className="absolute left-[18px] top-0 bottom-0 w-px bg-gradient-to-b from-primary-500 via-signal/60 to-transparent" />
 
           <div className="space-y-8">
             {timeline.map((item, index) => (
-              <div key={item.id} className="relative pl-14 animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                <TimelineIcon type={item.type} />
+              <Reveal key={item.id} delay={index * 80} as="div">
+                <div className="relative pl-14">
+                  <TimelineIcon type={item.type} />
 
-                <div className="card-base p-5">
-                  <div className="mb-1 flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-medium text-primary-500">{item.date}</span>
+                  <div className="card-base p-5">
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
+                      <span className="font-mono text-xs font-medium text-primary-500">{item.date}</span>
+                    </div>
+                    <h3 className="font-display font-semibold tracking-tight">{item.title}</h3>
+                    <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{item.subtitle}</p>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{item.description}</p>
                   </div>
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{item.subtitle}</p>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{item.description}</p>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
