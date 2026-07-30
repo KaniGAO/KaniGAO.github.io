@@ -12,9 +12,7 @@ const Tools = lazy(() => import('@/pages/Tools'))
 const Agent = lazy(() => import('@/pages/Agent'))
 const Blog = lazy(() => import('@/pages/Blog'))
 const BlogPost = lazy(() => import('@/pages/BlogPost'))
-const Quant = lazy(() => import('@/pages/Quant'))
 const About = lazy(() => import('@/pages/About'))
-const BarModel = lazy(() => import('@/pages/projects/BarModel'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
 function PageLoader() {
@@ -34,12 +32,10 @@ export default function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="projects" element={<Projects />} />
-            <Route path="projects/bar-model" element={<BarModel />} />
             <Route path="tools" element={<Tools />} />
             <Route path="agent" element={<Agent />} />
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:slug" element={<BlogPost />} />
-            <Route path="quant" element={<Quant />} />
             <Route path="about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Route>

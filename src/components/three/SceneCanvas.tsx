@@ -3,19 +3,29 @@ import { Suspense } from 'react'
 import { Environment, Lightformer } from '@react-three/drei'
 import { useTheme } from '@/hooks/useTheme'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { useDeviceQuality } from '@/hooks/useDeviceQuality'
 import HeadAvatar from './HeadAvatar'
 import ParticleField from './ParticleField'
 import FloatingDebris from './FloatingDebris'
 
-export default function SceneCanvas() {
+/**
+ * @param paused  when true (scene scrolled out / tab hidden) the render loop
+ *                is stopped entirely to save CPU, battery and stop throttling.
+ */
+export default function SceneCanvas({ paused = false }: { paused?: boolean }) {
   const { isDark } = useTheme()
   const reduced = usePrefersReducedMotion()
+  const q = useDeviceQuality()
   const bg = isDark ? '#04060d' : '#edf2fa'
 
   return (
     <Canvas
       camera={{ position: [0.35, 0.45, 5.6], fov: 40 }}
-      dpr={[1, 2]}
+      dpr={q.dpr}
+      // Stop drawing when the scene is off-screen or the tab is hidden: the
+      // single biggest win against background stutter / heat-driven throttling.
+      frameloop={paused || reduced ? 'never' : 'always'}
+      gl={{ antialias: q.antialias, powerPreference: 'high-performance' }}
       style={{ position: 'absolute', inset: 0 }}
     >
       <color attach="background" args={[bg]} />
@@ -49,11 +59,16 @@ export default function SceneCanvas() {
         intensity={isDark ? 0.35 : 0.22}
         color="#cfe3ff"
       />
-      <ParticleField isDark={isDark} reduced={reduced} />
-      <FloatingDebris isDark={isDark} reduced={reduced} />
+      <ParticleField isDark={isDark} reduced={reduced} count={q.particleCount} />
+      <FloatingDebris
+        isDark={isDark}
+        reduced={reduced}
+        skyCount={q.debrisSky}
+        redCount={q.debrisRed}
+      />
       {/* Procedural studio environment (no network fetch) — gives the PBR
           model realistic ambient light + soft reflections. */}
-      <Environment resolution={256}>
+      <Environment resolution={q.envResolution}>
         <Lightformer
           intensity={isDark ? 1.1 : 1.4}
           position={[0, 2, 3]}

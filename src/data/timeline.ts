@@ -2,15 +2,6 @@ import { TimelineItem } from '@/types'
 
 export const timeline: TimelineItem[] = [
   {
-    id: '1',
-    title: 'A-share Accrual Profit Factor Backtesting',
-    subtitle: 'GitHub Open-Source Project',
-    description:
-      'Used tushare to obtain financial and daily-frequency data. Built a monthly rebalancing long/short portfolio (top 10% vs bottom 10%). Cumulative return 14.6%, Sharpe 0.91, max drawdown -9.7%.',
-    date: 'Mar 2026 – Present',
-    type: 'project',
-  },
-  {
     id: '2',
     title: 'WorldQuant',
     subtitle: 'Quantitative Research Consultant (Part-time)',

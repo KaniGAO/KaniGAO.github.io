@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-import SceneBackdrop from '@/components/SceneBackdrop'
+import { lazy, Suspense } from 'react'
+
+// Code-split the WebGL scene so the heavy three.js bundle loads after the
+// page content is interactive — much faster first paint, especially on mobile.
+const SceneBackdrop = lazy(() => import('@/components/SceneBackdrop'))
 import Reveal from '@/components/Reveal'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import { projects } from '@/data/projects'
@@ -129,7 +133,7 @@ function Hero3D() {
 }
 
 function FeaturedProjects() {
-  const featured = projects.slice(0, 3)
+  const featured = projects.filter((p) => p.roles?.includes('project')).slice(0, 3)
 
   return (
     <section className="py-24">
@@ -271,7 +275,11 @@ export default function Home() {
       {/* Persistent 3D backdrop — fixed behind the page, fades/sinks as you
           scroll past the Hero so the scene feels continuous, not cut off.
           Skipped entirely when the user prefers reduced motion (no rAF loops). */}
-      {!prefersReduced && <SceneBackdrop />}
+      {!prefersReduced && (
+        <Suspense fallback={null}>
+          <SceneBackdrop />
+        </Suspense>
+      )}
       <Hero3D />
       {/* Content curtain: the scene dissolves from fully visible behind the
           Hero into a near-solid panel so the cards read clearly without a

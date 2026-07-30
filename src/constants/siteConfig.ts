@@ -5,7 +5,6 @@ export const NAV_LINKS = [
   { label: 'Projects', path: '/projects' },
   { label: 'Tools', path: '/tools' },
   { label: 'Agent', path: '/agent' },
-  { label: 'Quant Lab', path: '/quant' },
   { label: 'Blog', path: '/blog' },
   { label: 'About', path: '/about' },
 ] as const
@@ -18,7 +17,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     name: 'Email',
-    url: 'mailto:kani@example.com',
+    url: 'mailto:gaokanglin6@gmail.com',
     icon: 'mail',
   },
 ]

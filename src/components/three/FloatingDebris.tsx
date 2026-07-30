@@ -12,9 +12,6 @@ type Shard = {
   scale: number
 }
 
-const SKY_COUNT = 24
-const RED_COUNT = 7
-
 function makeShards(count: number): Shard[] {
   const shards: Shard[] = []
   for (let i = 0; i < count; i++) {
@@ -42,19 +39,28 @@ function makeShards(count: number): Shard[] {
 type Props = {
   isDark: boolean
   reduced: boolean
+  /** tumbling cool shards — lowered on phones via the device-quality tier */
+  skyCount: number
+  /** tumbling neon-accent shards */
+  redCount: number
 }
 
 /**
  * Floating debris — sparse wireframe shards tumbling slowly, plus one large
  * abstract wireframe icosahedron rotating in the deep background.
  */
-export default function FloatingDebris({ isDark, reduced }: Props) {
+export default function FloatingDebris({
+  isDark,
+  reduced,
+  skyCount,
+  redCount,
+}: Props) {
   const skyRef = useRef<THREE.InstancedMesh>(null)
   const redRef = useRef<THREE.InstancedMesh>(null)
   const rigRef = useRef<THREE.Group>(null)
 
-  const skyShards = useMemo(() => makeShards(SKY_COUNT), [])
-  const redShards = useMemo(() => makeShards(RED_COUNT), [])
+  const skyShards = useMemo(() => makeShards(skyCount), [skyCount])
+  const redShards = useMemo(() => makeShards(redCount), [redCount])
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   useFrame(({ clock }) => {
@@ -91,7 +97,20 @@ export default function FloatingDebris({ isDark, reduced }: Props) {
       {/* Sparse tumbling shards */}
       <instancedMesh
         ref={skyRef}
-        args={[undefined, undefined, SKY_COUNT]}
+        args={[undefined, undefined, skyCount]}
+        frustumCulled={false}
+      >
+        <tetrahedronGeometry args={[1, 0]} />
+        <meshBasicMaterial
+          wireframe
+          transparent
+          opacity={isDark ? 0.3 : 0.13}
+          color="#7dd3fc"
+        />
+      </instancedMesh>
+      <instancedMesh
+        ref={redRef}
+        args={[undefined, undefined, redCount]}
         frustumCulled={false}
       >
         <tetrahedronGeometry args={[1, 0]} />
@@ -100,19 +119,6 @@ export default function FloatingDebris({ isDark, reduced }: Props) {
           transparent
           opacity={isDark ? 0.32 : 0.14}
           color="#38bdf8"
-        />
-      </instancedMesh>
-      <instancedMesh
-        ref={redRef}
-        args={[undefined, undefined, RED_COUNT]}
-        frustumCulled={false}
-      >
-        <tetrahedronGeometry args={[1, 0]} />
-        <meshBasicMaterial
-          wireframe
-          transparent
-          opacity={isDark ? 0.5 : 0.16}
-          color="#ff2d4f"
         />
       </instancedMesh>
 

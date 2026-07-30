@@ -1,3 +1,6 @@
+/** Which site views a project surfaces in. Drives Agent/Tools/Projects/Hero. */
+export type ProjectRole = 'project' | 'agent' | 'tool'
+
 export interface Project {
   id: string
   title: string
@@ -7,10 +10,22 @@ export interface Project {
   githubUrl?: string
   coverImage?: string
   liveUrl?: string
-  /** interactive sub-page (e.g. /projects/bar-model) instead of a plain card */
+  /** interactive sub-page instead of a plain card */
   interactive?: boolean
   /** route for the interactive sub-page */
   route?: string
+  /** which views this work appears in — single source of truth */
+  roles?: ProjectRole[]
+  /** write-up slug or URL shown on the Agent view (optional) */
+  blog?: string
+  /** short Chinese role label shown on the Agent view */
+  agentRole?: string
+  /** status badge shown on the Tools view */
+  toolStatus?: 'open-source' | 'local'
+  /** lucide icon key for the Tools view */
+  toolIcon?: 'file' | 'news' | 'bot' | 'chart'
+  /** private GitHub repo — shown with a Private badge, no code link */
+  privateRepo?: boolean
 }
 
 export interface Skill {

@@ -31,5 +31,8 @@ lerna-debug.log*
 .env.local
 .env.*.local
 
+# EdgeOne proxy (contains server-side API key — deploy via CLI, never commit)
+proxy/
+
 # IDE / agent artifacts
 .codebuddy/
