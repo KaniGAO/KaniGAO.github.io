@@ -21,7 +21,19 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return
-          if (id.includes('three') || id.includes('@react-three')) return 'three'
+          // three + its dependents MUST live in the SAME chunk. Packages like
+          // three-stdlib / gainmap define `class X extends Loader` at top level,
+          // where `Loader` is imported from three. Splitting them into separate
+          // chunks breaks module init order and throws
+          // "Cannot access 'Loader' before initialization" (TDZ) at runtime.
+          if (
+            id.includes('three') ||
+            id.includes('@react-three') ||
+            id.includes('three-stdlib') ||
+            id.includes('gainmap') ||
+            id.includes('maath')
+          )
+            return 'three'
           if (id.includes('echarts') || id.includes('zrender')) return 'echarts'
           if (
             id.includes('/react/') ||
