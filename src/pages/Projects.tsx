@@ -8,7 +8,18 @@ import TagList from '@/components/TagList'
 
 // Only surface work flagged for the Projects view (single source of truth).
 const projectProjects = projects.filter((p) => p.roles?.includes('project'))
-const ALL_TAGS = ['All', ...new Set(projectProjects.flatMap((p) => p.tags))] as const
+
+// Unique filter chips: { label, kind } derived from every project's tags.
+const ALL_TAGS = [
+  { label: 'All', kind: 'all' as const },
+  ...Array.from(
+    new Map(
+      projectProjects
+        .flatMap((p) => p.tags)
+        .map((t) => [t.label, { label: t.label, kind: t.kind }] as const)
+    ).values()
+  ),
+]
 
 export default function Projects() {
   const [activeTag, setActiveTag] = useState<string>('All')
@@ -16,9 +27,18 @@ export default function Projects() {
   const filtered = useMemo(() => {
     if (activeTag === 'All') return projectProjects
     return projectProjects.filter((p) =>
-      p.tags.some((t) => t.toLowerCase().includes(activeTag.toLowerCase()))
+      p.tags.some((t) => t.label.toLowerCase().includes(activeTag.toLowerCase()))
     )
   }, [activeTag, projectProjects])
+
+  const filterColor = (tag: { label: string; kind: 'tech' | 'domain' | 'all' }) => {
+    if (activeTag !== tag.label) {
+      return 'bg-white/60 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
+    }
+    if (tag.kind === 'domain') return 'bg-neon text-white shadow-glow-red'
+    if (tag.kind === 'tech') return 'bg-primary-500 text-white shadow-glow-red'
+    return 'bg-neon text-white shadow-glow-red'
+  }
 
   return (
     <div className="py-16">
@@ -30,20 +50,26 @@ export default function Projects() {
         />
 
         {/* Tag Filter */}
-        <div className="mb-10 flex flex-wrap justify-center gap-2">
+        <div className="mb-4 flex flex-wrap justify-center gap-2">
           {ALL_TAGS.map((tag) => (
             <button
-              key={tag}
-              onClick={() => setActiveTag(tag)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-                activeTag === tag
-                  ? 'bg-neon text-white shadow-glow-red'
-                  : 'bg-white/60 text-slate-600 hover:bg-white dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
-              }`}
+              key={tag.label}
+              onClick={() => setActiveTag(tag.label)}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${filterColor(tag)}`}
             >
-              {tag}
+              {tag.label}
             </button>
           ))}
+        </div>
+
+        {/* Legend */}
+        <div className="mb-8 flex flex-wrap justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-primary-500" /> Tech stack
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-neon" /> Domain
+          </span>
         </div>
 
         {/* Project Grid */}

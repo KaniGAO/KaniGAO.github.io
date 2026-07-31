@@ -17,7 +17,8 @@ const projectLines = projects
       .filter(Boolean)
       .join(', ')
     const views = p.roles?.join('/') ?? 'project'
-    return `- ${p.title} [${views}] — ${p.description}${links ? ` (${links})` : ''} | tags: ${p.tags.join(', ')}`
+    const tagStr = p.tags.map((t) => t.label).join(', ')
+    return `- ${p.title} [${views}] — ${p.description}${links ? ` (${links})` : ''} | tags: ${tagStr}`
   })
   .join('\n')
 

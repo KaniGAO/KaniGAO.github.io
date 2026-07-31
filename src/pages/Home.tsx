@@ -180,10 +180,14 @@ function FeaturedProjects() {
                   <div className="mt-3 hidden flex-wrap gap-2 sm:flex">
                     {project.tags.slice(0, 3).map((tag) => (
                       <span
-                        key={tag}
-                        className="rounded-md border border-slate-200 px-2 py-0.5 font-mono text-[11px] text-slate-500 dark:border-white/10 dark:text-slate-500"
+                        key={tag.label}
+                        className={`rounded-md border px-2 py-0.5 font-mono text-[11px] ${
+                          tag.kind === 'domain'
+                            ? 'border-neon/30 text-neon'
+                            : 'border-slate-200 text-slate-500 dark:border-white/10 dark:text-slate-500'
+                        }`}
                       >
-                        {tag}
+                        {tag.label}
                       </span>
                     ))}
                   </div>

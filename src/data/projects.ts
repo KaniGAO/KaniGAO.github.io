@@ -20,7 +20,14 @@ export const projects: Project[] = [
     title: 'Fin-Report Agent — Financial Statement Auto-Filler',
     description:
       'AI agent that fills financial figures from Excel statements back into Word report templates — fuzzy-matching engine that never guesses numbers, fully local, live on the web.',
-    tags: ['Python', 'FastAPI', 'AI Agent', 'React', 'Docker', 'rapidfuzz'],
+    tags: [
+      { label: 'Python', kind: 'tech' },
+      { label: 'FastAPI', kind: 'tech' },
+      { label: 'AI Agent', kind: 'domain' },
+      { label: 'React', kind: 'tech' },
+      { label: 'Docker', kind: 'tech' },
+      { label: 'rapidfuzz', kind: 'tech' },
+    ],
     category: 'fullstack',
     githubUrl: 'https://github.com/KaniGAO/fin-report-agent',
     liveUrl: 'https://fin-report-agent.onrender.com/',
@@ -34,7 +41,15 @@ export const projects: Project[] = [
     title: 'AlphaStream — HK Multi-Factor Risk & Portfolio Optimizer',
     description:
       'End-to-end quant pipeline for HK equities: factor regression → minimum-variance optimization (7.27% annualized idio vol) → automated email report delivery.',
-    tags: ['Python', 'Factor Model', 'Portfolio Optimization', 'Risk Modeling', 'FastAPI', 'HK Stocks', 'Jupyter'],
+    tags: [
+      { label: 'Python', kind: 'tech' },
+      { label: 'Factor Model', kind: 'domain' },
+      { label: 'Portfolio Optimization', kind: 'domain' },
+      { label: 'Risk Modeling', kind: 'domain' },
+      { label: 'FastAPI', kind: 'tech' },
+      { label: 'HK Stocks', kind: 'domain' },
+      { label: 'Jupyter', kind: 'tech' },
+    ],
     category: 'fullstack',
     githubUrl: 'https://github.com/KaniGAO/AlphaStream',
     roles: ['project'],
@@ -44,7 +59,14 @@ export const projects: Project[] = [
     title: 'PM Review AI Agent',
     description:
       'Daily A-share review agent (Dify + FastAPI + Tushare): ranks industry leaders by excess return, writes an LLM review, and pushes Feishu cards every trading day at 15:30.',
-    tags: ['Python', 'FastAPI', 'Dify', 'AI Agent', 'Quant', 'Tushare'],
+    tags: [
+      { label: 'Python', kind: 'tech' },
+      { label: 'FastAPI', kind: 'tech' },
+      { label: 'Dify', kind: 'tech' },
+      { label: 'AI Agent', kind: 'domain' },
+      { label: 'Quant', kind: 'domain' },
+      { label: 'Tushare', kind: 'tech' },
+    ],
     category: 'fullstack',
     githubUrl: 'https://github.com/KaniGAO/pm-review-ai-agent',
     roles: ['project', 'agent'],
@@ -56,7 +78,14 @@ export const projects: Project[] = [
     title: 'Cross-Border AI Analyst (PoC)',
     description:
       'Cross-border e-commerce AI analyst PoC built in 8 hours: 7 skills from multi-platform data ingestion to P&L attribution, restocking advice and Feishu morning reports.',
-    tags: ['AI Agent', 'Dify', 'FastAPI', 'Feishu', 'Cross-border E-commerce', 'Agentic Workflow'],
+    tags: [
+      { label: 'AI Agent', kind: 'domain' },
+      { label: 'Dify', kind: 'tech' },
+      { label: 'FastAPI', kind: 'tech' },
+      { label: 'Feishu', kind: 'tech' },
+      { label: 'Cross-border E-commerce', kind: 'domain' },
+      { label: 'Agentic Workflow', kind: 'domain' },
+    ],
     category: 'fullstack',
     githubUrl: 'https://github.com/KaniGAO/cross-border-ai-analyst-poc',
     roles: ['project', 'agent'],
@@ -68,7 +97,14 @@ export const projects: Project[] = [
     title: 'Bloomberg Stock Data Pipeline',
     description:
       'Bloomberg blpapi data pipeline built in a locked-down school lab: BDP/BDH extraction to Google Drive, with returns, Sharpe and correlation analysis on Colab.',
-    tags: ['Python', 'Bloomberg', 'blpapi', 'Data Analysis', 'Google Colab', 'Finance'],
+    tags: [
+      { label: 'Python', kind: 'tech' },
+      { label: 'Bloomberg', kind: 'tech' },
+      { label: 'blpapi', kind: 'tech' },
+      { label: 'Data Analysis', kind: 'domain' },
+      { label: 'Google Colab', kind: 'tech' },
+      { label: 'Finance', kind: 'domain' },
+    ],
     category: 'fullstack',
     githubUrl: 'https://github.com/KaniGAO/bloomberg_stock_analysis',
     roles: ['project'],
@@ -78,7 +114,12 @@ export const projects: Project[] = [
     title: 'kaniSkill — Personal AI Agent Skill Library',
     description:
       'Private library of custom agent skills and workflows powering my personal AI skill OS — market briefings, report generation and automation routines.',
-    tags: ['AI Agent', 'Skills', 'Automation', 'Workflow'],
+    tags: [
+      { label: 'AI Agent', kind: 'domain' },
+      { label: 'Skills', kind: 'domain' },
+      { label: 'Automation', kind: 'domain' },
+      { label: 'Workflow', kind: 'domain' },
+    ],
     category: 'tool',
     roles: ['project'],
     privateRepo: true,
@@ -88,7 +129,12 @@ export const projects: Project[] = [
     title: 'Personal Homepage Portfolio',
     description:
       'This site: immersive WebGL 3D scene (three.js / react-three-fiber) on React + TypeScript + Vite, auto-deployed to GitHub Pages via Actions.',
-    tags: ['React', 'TypeScript', 'Vite', 'three.js'],
+    tags: [
+      { label: 'React', kind: 'tech' },
+      { label: 'TypeScript', kind: 'tech' },
+      { label: 'Vite', kind: 'tech' },
+      { label: 'three.js', kind: 'tech' },
+    ],
     category: 'frontend',
     githubUrl: 'https://github.com/KaniGAO/KaniGAO.github.io',
     liveUrl: 'https://kanigao.github.io/',
@@ -99,7 +145,12 @@ export const projects: Project[] = [
     title: 'Global Markets Briefing Agent',
     description:
       'Daily local agent that ingests Bloomberg ASKB output, cross-checks it against Yahoo Finance / FRED, then generates and emails a structured DOCX morning briefing.',
-    tags: ['Python', 'Bloomberg ASKB', 'FRED', 'SMTP'],
+    tags: [
+      { label: 'Python', kind: 'tech' },
+      { label: 'Bloomberg ASKB', kind: 'tech' },
+      { label: 'FRED', kind: 'tech' },
+      { label: 'SMTP', kind: 'tech' },
+    ],
     category: 'tool',
     roles: ['agent', 'tool'],
     agentRole: '每日市场早报',

@@ -1,11 +1,19 @@
 /** Which site views a project surfaces in. Drives Agent/Tools/Projects/Hero. */
 export type ProjectRole = 'project' | 'agent' | 'tool'
 
+/** A project tag, classified so the UI can color tech-stack vs domain. */
+export interface Tag {
+  /** Display text, e.g. "Python" or "Quant". */
+  label: string
+  /** 'tech' = tech stack/library; 'domain' = field/problem space. */
+  kind: 'tech' | 'domain'
+}
+
 export interface Project {
   id: string
   title: string
   description: string
-  tags: string[]
+  tags: Tag[]
   category: 'frontend' | 'backend' | 'fullstack' | 'tool'
   githubUrl?: string
   coverImage?: string

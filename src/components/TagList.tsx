@@ -1,36 +1,52 @@
 import { useState } from 'react'
+import type { Tag } from '@/types'
 
 /**
  * Compact tag row shared by Projects / Agent / Tools cards.
+ * Tags are classified (`tech` | `domain`) so each kind gets its own color:
+ *   - tech   → blue (tech-stack / libraries)
+ *   - domain → neon red (field / problem space)
  * Shows at most `max` tags; overflow collapses into a clickable "+N" chip
  * (dashed border) that expands the full list. Keeps cards readable when a
- * project carries 6-7 tags.
+ * project carries 6-7 tags. Legacy plain-string tags are treated as `tech`.
  */
+type TagInput = Tag | string
+
+function normalize(tag: TagInput): Tag {
+  return typeof tag === 'string' ? { label: tag, kind: 'tech' } : tag
+}
+
 export default function TagList({
   tags,
   max = 4,
   variant = 'rounded',
 }: {
-  tags: string[]
+  tags: TagInput[]
   max?: number
   /** 'rounded' = square-ish md chips (Projects), 'pill' = full pills (Agent) */
   variant?: 'rounded' | 'pill'
 }) {
   const [expanded, setExpanded] = useState(false)
 
-  const overflow = tags.length - max
-  const visible = expanded || overflow <= 0 ? tags : tags.slice(0, max)
+  const normalized = tags.map(normalize)
+  const overflow = normalized.length - max
+  const visible = expanded || overflow <= 0 ? normalized : normalized.slice(0, max)
 
   const chipBase =
     variant === 'pill'
-      ? 'rounded-full bg-primary-500/10 px-2.5 py-0.5 text-xs text-primary-500'
-      : 'rounded-md bg-primary-400/10 px-2 py-0.5 text-xs font-medium text-primary-500 dark:text-primary-300'
+      ? 'rounded-full px-2.5 py-0.5 text-xs'
+      : 'rounded-md px-2 py-0.5 text-xs font-medium'
+
+  const chipColor = (kind: Tag['kind']) =>
+    kind === 'domain'
+      ? 'bg-neon/10 text-neon border border-neon/30'
+      : 'bg-primary-400/10 text-primary-500 dark:text-primary-300'
 
   return (
     <div className="flex flex-wrap items-center gap-1.5 transition-all">
       {visible.map((tag) => (
-        <span key={tag} className={chipBase}>
-          {tag}
+        <span key={tag.label} className={`${chipBase} ${chipColor(tag.kind)}`}>
+          {tag.label}
         </span>
       ))}
       {!expanded && overflow > 0 && (
