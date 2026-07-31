@@ -103,10 +103,7 @@ function Hero3D() {
 
           <p className="mt-5 text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
             I build models that turn risk into signal — and an AI skills OS you
-            can open from one URL.{' '}
-            <span className="text-slate-500 dark:text-slate-400">
-              Polymer Tech Expo 2026 participant.
-            </span>
+            can open from one URL.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
