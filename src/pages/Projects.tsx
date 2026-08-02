@@ -10,16 +10,17 @@ import TagList from '@/components/TagList'
 const projectProjects = projects.filter((p) => p.roles?.includes('project'))
 
 // Unique filter chips: { label, kind } derived from every project's tags.
-const ALL_TAGS = [
-  { label: 'All', kind: 'all' as const },
-  ...Array.from(
-    new Map(
-      projectProjects
-        .flatMap((p) => p.tags)
-        .map((t) => [t.label, { label: t.label, kind: t.kind }] as const)
-    ).values()
-  ),
-]
+const ALL_PROJECT_TAGS = Array.from(
+  new Map(
+    projectProjects
+      .flatMap((p) => p.tags)
+      .map((t) => [t.label, { label: t.label, kind: t.kind }] as const)
+  ).values()
+)
+
+// Split into Tech / Domain groups for a clean, grouped filter bar.
+const TECH_TAGS = ALL_PROJECT_TAGS.filter((t) => t.kind === 'tech')
+const DOMAIN_TAGS = ALL_PROJECT_TAGS.filter((t) => t.kind === 'domain')
 
 export default function Projects() {
   const [activeTag, setActiveTag] = useState<string>('All')
@@ -49,17 +50,39 @@ export default function Projects() {
           subtitle="Quant research, backtesting systems, and financial engineering work."
         />
 
-        {/* Tag Filter */}
-        <div className="mb-4 flex flex-wrap justify-center gap-2">
-          {ALL_TAGS.map((tag) => (
+        {/* Tag Filter — grouped by Tech / Domain */}
+        <div className="mb-4 flex flex-col items-center gap-3">
+          {/* All + Tech group */}
+          <div className="flex flex-wrap justify-center gap-2">
             <button
-              key={tag.label}
-              onClick={() => setActiveTag(tag.label)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${filterColor(tag)}`}
+              onClick={() => setActiveTag('All')}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${filterColor({ label: 'All', kind: 'all' })}`}
             >
-              {tag.label}
+              All
             </button>
-          ))}
+            {TECH_TAGS.map((tag) => (
+              <button
+                key={tag.label}
+                onClick={() => setActiveTag(tag.label)}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${filterColor(tag)}`}
+              >
+                {tag.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Domain group */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {DOMAIN_TAGS.map((tag) => (
+              <button
+                key={tag.label}
+                onClick={() => setActiveTag(tag.label)}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${filterColor(tag)}`}
+              >
+                {tag.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Legend */}
