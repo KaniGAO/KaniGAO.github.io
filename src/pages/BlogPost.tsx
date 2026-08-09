@@ -3,7 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
-import { getPostBySlug, getAllPosts } from '@/utils/blog'
+import { getPostBySlug, getAllPosts, getAllCategories } from '@/utils/blog'
 import type { BlogLang } from '@/types'
 import type { BlogPost as BlogPostType } from '@/types'
 
@@ -20,6 +20,11 @@ export default function BlogPost() {
   const isBilingual = post.contentEn.trim().length > 0
   const title = lang === 'en' && post.titleEn ? post.titleEn : post.title
   const body: BlogPostType = post
+  const categories = getAllCategories()
+  const categoryLabel = (key: string) =>
+    lang === 'en'
+      ? categories.find((c) => c.key === key)?.labelEn ?? key
+      : categories.find((c) => c.key === key)?.labelZh ?? key
 
   return (
     <article className="py-16">
@@ -47,12 +52,12 @@ export default function BlogPost() {
 
           <div className="mt-4 flex items-center justify-between gap-4">
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
+              {post.categories.map((cat) => (
                 <span
-                  key={tag}
+                  key={cat}
                   className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-500"
                 >
-                  #{tag}
+                  {categoryLabel(cat)}
                 </span>
               ))}
             </div>

@@ -54,6 +54,8 @@ export interface BlogPost {
   /** English excerpt, used when the reader switches to EN. */
   excerptEn?: string
   tags: string[]
+  /** Top-level category keys derived from tags, e.g. ['ai-agent','quant']. */
+  categories: string[]
   content: string
   /** Chinese body (before the <!--lang:en--> split marker). */
   contentZh: string

@@ -37,6 +37,61 @@ function parseFrontmatter(raw: string): MatterResult {
   return { data, content: match[2].trim() }
 }
 
+/** 标签 → 顶层分类 key 的映射表。旧的散标签自动归入 4 个分类。 */
+const CATEGORY_MAP: Record<string, string> = {
+  // AI Agent
+  'AI Agent': 'ai-agent',
+  Dify: 'ai-agent',
+  'Agentic Workflow': 'ai-agent',
+  CodeBuddy: 'ai-agent',
+  Feishu: 'ai-agent',
+  '文档自动化': 'ai-agent',
+  'Cross-border E-commerce': 'ai-agent',
+  // 量化金融
+  Quant: 'quant',
+  Quantitative: 'quant',
+  'Risk Management': 'quant',
+  Tushare: 'quant',
+  // 工程实践
+  FastAPI: 'engineering',
+  Python: 'engineering',
+  Vite: 'engineering',
+  调试: 'engineering',
+  '本地开发': 'engineering',
+  部署: 'engineering',
+  DevOps: 'engineering',
+  // 研发协作
+  Git: 'git-devops',
+  GitHub: 'git-devops',
+  SSH: 'git-devops',
+  '版本控制': 'git-devops',
+}
+
+/** 分类 key → 展示文字（中/英）与排序。 */
+const CATEGORY_META: { key: string; labelZh: string; labelEn: string }[] = [
+  { key: 'ai-agent', labelZh: 'AI Agent', labelEn: 'AI Agent' },
+  { key: 'quant', labelZh: '量化金融', labelEn: 'Quant' },
+  { key: 'engineering', labelZh: '工程实践', labelEn: 'Engineering' },
+  { key: 'git-devops', labelZh: '研发协作', labelEn: 'Git & DevOps' },
+]
+
+const CATEGORY_ORDER = CATEGORY_META.map((c) => c.key)
+
+/** 由 tags 推导分类（去重 + 固定顺序），无匹配分类时为空数组。 */
+function deriveCategories(tags: string[]): string[] {
+  const set = new Set<string>()
+  for (const tag of tags) {
+    const key = CATEGORY_MAP[tag]
+    if (key) set.add(key)
+  }
+  return CATEGORY_ORDER.filter((k) => set.has(k))
+}
+
+/** 返回 4 个顶层分类的元信息，供首页筛选栏使用。 */
+export function getAllCategories(): { key: string; labelZh: string; labelEn: string }[] {
+  return CATEGORY_META
+}
+
 const blogModules = import.meta.glob('/src/content/blog/**/*.md', {
   query: '?raw',
   import: 'default',
@@ -63,6 +118,7 @@ export function getAllPosts(): BlogPost[] {
     const slug = match?.[2] || 'untitled'
     const title = (data.title as string) || slug.replace(/-/g, ' ')
     const tags: string[] = (Array.isArray(data.tags) ? data.tags : []) as string[]
+    const categories = deriveCategories(tags)
     const description: string =
       (data.description as string) ||
       markdown
@@ -90,6 +146,7 @@ export function getAllPosts(): BlogPost[] {
       excerpt: description,
       excerptEn: descriptionEn,
       tags,
+      categories,
       content: markdown,
       contentZh,
       contentEn,

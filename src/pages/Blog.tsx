@@ -1,30 +1,40 @@
 import { useState, useMemo } from 'react'
 import PageHeader from '@/components/PageHeader'
 import { Link } from 'react-router-dom'
-import { getSortedPosts } from '@/utils/blog'
+import { getSortedPosts, getAllCategories } from '@/utils/blog'
 import type { BlogLang } from '@/types'
 
 export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [activeCats, setActiveCats] = useState<string[]>([])
   const [lang, setLang] = useState<BlogLang>('zh')
   const posts = useMemo(() => getSortedPosts(), [])
+  const categories = useMemo(() => getAllCategories(), [])
+
+  const categoryLabel = (key: string) =>
+    lang === 'en'
+      ? categories.find((c) => c.key === key)?.labelEn ?? key
+      : categories.find((c) => c.key === key)?.labelZh ?? key
 
   const filtered = useMemo(() => {
-    if (!searchQuery.trim()) return posts
-    const query = searchQuery.toLowerCase()
-    return posts.filter(
-      (p) =>
+    return posts.filter((p) => {
+      const matchCat =
+        activeCats.length === 0 ||
+        activeCats.some((c) => p.categories.includes(c))
+      const query = searchQuery.trim().toLowerCase()
+      const matchQuery =
+        !query ||
         p.title.toLowerCase().includes(query) ||
         p.tags.some((t) => t.toLowerCase().includes(query)) ||
         p.excerpt.toLowerCase().includes(query)
-    )
-  }, [posts, searchQuery])
+      return matchCat && matchQuery
+    })
+  }, [posts, activeCats, searchQuery])
 
-  const allTags = useMemo(() => {
-    const tagSet = new Set<string>()
-    posts.forEach((p) => p.tags.forEach((t) => tagSet.add(t)))
-    return Array.from(tagSet)
-  }, [posts])
+  const toggleCat = (key: string) =>
+    setActiveCats((prev) =>
+      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
+    )
 
   return (
     <div className="py-16">
@@ -83,20 +93,35 @@ export default function Blog() {
           </div>
         </div>
 
-        {/* Tags */}
-        {allTags.length > 0 && (
-          <div className="mb-8 flex flex-wrap justify-center gap-2">
-            {allTags.map((tag) => (
+        {/* Categories */}
+        <div className="mb-8 flex flex-wrap justify-center gap-2">
+          <button
+            onClick={() => setActiveCats([])}
+            className={`rounded-full border px-4 py-1.5 text-xs font-medium transition-colors ${
+              activeCats.length === 0
+                ? 'border-primary-500 bg-primary-500 text-white'
+                : 'border-slate-200 text-slate-600 hover:border-primary-500 hover:text-primary-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-primary-500 dark:hover:text-primary-400'
+            }`}
+          >
+            {lang === 'en' ? 'All' : '全部'}
+          </button>
+          {categories.map((cat) => {
+            const active = activeCats.includes(cat.key)
+            return (
               <button
-                key={tag}
-                onClick={() => setSearchQuery(tag)}
-                className="rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:border-primary-500 hover:text-primary-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-primary-500 dark:hover:text-primary-400 transition-colors"
+                key={cat.key}
+                onClick={() => toggleCat(cat.key)}
+                className={`rounded-full border px-4 py-1.5 text-xs font-medium transition-colors ${
+                  active
+                    ? 'border-primary-500 bg-primary-500 text-white'
+                    : 'border-slate-200 text-slate-600 hover:border-primary-500 hover:text-primary-500 dark:border-slate-700 dark:text-slate-400 dark:hover:border-primary-500 dark:hover:text-primary-400'
+                }`}
               >
-                #{tag}
+                {lang === 'en' ? cat.labelEn : cat.labelZh}
               </button>
-            ))}
-          </div>
-        )}
+            )
+          })}
+        </div>
 
         {/* Posts Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -120,13 +145,13 @@ export default function Blog() {
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">{post.readingTime}</span>
-                <div className="flex gap-1.5">
-                  {post.tags.slice(0, 2).map((tag) => (
+                <div className="flex flex-wrap justify-end gap-1.5">
+                  {post.categories.map((cat) => (
                     <span
-                      key={tag}
+                      key={cat}
                       className="rounded-full bg-primary-500/10 px-2 py-0.5 text-xs text-primary-500"
                     >
-                      {tag}
+                      {categoryLabel(cat)}
                     </span>
                   ))}
                 </div>
