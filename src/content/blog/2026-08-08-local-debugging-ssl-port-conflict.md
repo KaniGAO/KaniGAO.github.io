@@ -1,8 +1,10 @@
 ---
 title: "从 SSL 报错到白屏：一次 Full-stack 本地排障复盘"
+titleEn: "From SSL Errors to a Blank Screen: A Full-stack Local Debugging Retrospective"
 tags: ["调试", "Python", "FastAPI", "Vite", "本地开发"]
 date: "2026-08-08"
 description: "一次很典型也很有价值的本地排障：表面上连续出现 Python SSL、Node、Xcode 等多个环境问题，但最终前端白屏的真正根因，和最初那几个问题根本不是同一件事——10000 端口被网盘进程 netdisk_s 占用。复盘整套分层验证思路。"
+descriptionEn: "A classic, instructive local debugging case: Python SSL, Node, and Xcode errors appeared in sequence, yet the real cause of the blank screen was unrelated to any of them — port 10000 was occupied by a netdisk daemon. A retrospective on layered verification."
 githubUrl: "https://github.com/KaniGAO/KaniGAO.github.io"
 ---
 
@@ -466,3 +468,283 @@ npm run dev
 ---
 
 *（本复盘记录一次完整的本地排障过程：把每一层拆开验证，比反复重装环境可靠得多。）*
+
+<!--lang:en-->
+
+# From SSL Errors to a Blank Screen: A Full-stack Local Debugging Retrospective
+
+This is a classic, instructive case: **multiple environment problems appeared in sequence, but the real cause of the blank screen was unrelated to any of the first ones.** Without verifying each layer separately, it's easy to keep reinstalling Python, Node, Xcode, and React in circles.
+
+> Project: a `Financial Report` local web app — React + TypeScript + Vite 5.4.21 + Node.js (frontend) and FastAPI + Uvicorn + Python 3.12 (backend).
+
+Local dev architecture:
+
+```
+Browser
+  → http://localhost:5173
+    → Vite Dev Server
+      → /api/* Proxy
+        → http://localhost:10000
+          → FastAPI / Uvicorn
+```
+
+Two independent problems actually occurred:
+
+- **Problem A: Python SSL certificate config broken** → deps wouldn't install.
+- **Problem B: port 10000 occupied by another program** → blank screen.
+
+---
+
+## Part 1: Python Deps Won't Install
+
+`pip install -r requirements.txt` failed with `SSLCertVerificationError: certificate verify failed`. `pip install uvicorn` also failed, and `uvicorn --version` returned `command not found`.
+
+**Key judgment**: `No matching distribution found` doesn't mean PyPI lacks FastAPI — the real error was `CERTIFICATE_VERIFY_FAILED` *before* that:
+
+```
+pip can't reach PyPI over HTTPS
+  → can't read the package index
+    → pip sees no versions
+      → shows versions: none
+```
+
+So: **the package is fine; SSL verification is the problem.**
+
+### Verify the network layer: curl works, Python SSL doesn't
+
+```bash
+curl -I https://pypi.org   # HTTP/2 200
+env | grep -i -E "proxy|SSL|REQUESTS|CURL"   # nothing
+```
+
+macOS DNS/Internet/HTTPS/PyPI are all fine; no proxy env vars interfere.
+
+### Diagnose Python's SSL trust store
+
+```bash
+python3 -c "import ssl; print(ssl.get_default_verify_paths())"
+# cafile=None, capath=None  → expects
+# /Library/Frameworks/Python.framework/Versions/3.12/etc/openssl/cert.pem
+ls -l .../cert.pem   # No such file or directory
+```
+
+**Python 3.12's expected CA bundle simply doesn't exist.**
+
+### Why Install Certificates.command also fails
+
+It first does `pip install certifi`, then symlinks Python's `cert.pem` to `certifi/cacert.pem` — a classic **bootstrap deadlock**: no cert → need the command → command needs HTTPS to fetch certifi.
+
+Reinstalling Python 3.12.10 didn't fix it either: the binary reinstall doesn't resolve the cert-bundle bootstrap.
+
+### Fix Python SSL via Anaconda's certifi
+
+Conda base had a complete CA bundle:
+
+```bash
+python -c "import certifi; print(certifi.where())"
+# /opt/anaconda3/lib/python3.13/site-packages/certifi/cacert.pem
+
+sudo ln -sf /opt/anaconda3/lib/python3.13/site-packages/certifi/cacert.pem \
+  /Library/Frameworks/Python.framework/Versions/3.12/etc/openssl/cert.pem
+
+/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 - <<'PY'
+import urllib.request
+print(urllib.request.urlopen("https://pypi.org").status)   # 200
+PY
+```
+
+**Python's SSL trust chain restored.**
+
+> **Debugging principle**: don't assume "no error = fixed." Design a test for the root cause. Here the root cause was "Python can't verify HTTPS certs," so the valid test is `urllib.request.urlopen("https://pypi.org")` returning `200` — **direct root-cause verification**.
+
+Then `pip install -r requirements.txt` succeeded.
+
+---
+
+## Part 2: Frontend Starts but Blank Screen
+
+`npm run dev` → `VITE v5.4.21 ready`. Node/npm/Vite/React compile/dev-server all ✅. But the browser is blank. Console:
+
+```
+Failed to load resource: 400 Bad Request (meta)
+TypeError: undefined is not an object (evaluating 'meta.units.find')
+```
+
+### The initial Node 24 suspicion
+
+Node was `v24.19.0`; the project previously used 22. A reasonable suspicion (major upgrades can break ESM/native deps/Vite plugins) — but it **needed verification, not assumption**.
+
+`nvm install 22` failed (`command not found: nvm`); installing nvm failed on `xcode-select: No developer tools were found` (nvm needs `git`).
+
+### Why missing Xcode isn't the cause
+
+If Xcode/CLT truly broke the frontend, the error would appear at `npm install` / `node-gyp` (`clang: command not found`). But `VITE ready` already proved: Node runtime, Vite, JS/TS compile, React bundle, HMR all fine. The real failure was an app-layer HTTP request: `HTTP 400 GET /api/meta`. Xcode CLT doesn't selectively make only `/api/meta → 400`. Excluded.
+
+### Switch to Node 22 directly (no nvm)
+
+```bash
+node -v   # v22.23.2
+npm run dev   # still: 400 /meta + meta.units.find
+```
+
+**Node 24 A/B-tested out**: Node 24 → Error A, Node 22 → Error A. With other conditions constant, `Node version ≠ root cause`.
+
+### Trace from the React exception back to API failure
+
+`meta.units.find(...)` looks like a React/TS bug, but the earlier error is `GET /api/meta → 400 Bad Request`. Normal response: `{"units":[...]}`; actual: `{"info":"Invalid request!"}`. So `meta.units` is undefined → `undefined.find(...)` → `TypeError`. The real causal chain:
+
+```
+API failure → unexpected schema → incomplete state → unsafe access → React crash → blank
+```
+
+### Network Panel is the turning point
+
+Safari DevTools → Network → `meta`: `Status: 400`, `Response: {"info":"Invalid request!"}`. Proves it's an API error response, not a failed JS bundle.
+
+### Check the Vite proxy (fine), then curl the backend directly
+
+```bash
+curl -i http://localhost:10000/api/meta
+# HTTP/1.1 400 Bad Request
+# {"info":"Invalid request!"}
+```
+
+This proves **React/Vite are irrelevant** — `curl` bypasses them entirely and still gets the same error. The problem is at port 10000 or its server.
+
+### Inspect the FastAPI /api/meta source
+
+```python
+@router.get("/meta", response_model=MetaResponse)
+def get_meta() -> dict:
+    return {"units": unit_options(), "max_pdfs": MAX_PDFS, "max_file_mb": MAX_FILE_MB}
+```
+
+This function **has no code path returning 400**, let alone `{"info":"Invalid request!"}`. Contradiction:
+
+```
+source:  GET /api/meta → always returns dict
+actual:  GET /api/meta → HTTP 400 {"info":"Invalid request!"}
+```
+
+Only one direction left: **the service answering isn't this FastAPI.**
+
+### Another strong signal: Uvicorn had already exited
+
+Terminal showed `Finished server process [36417]`. Yet `curl localhost:10000/api/meta` still returned `HTTP 400`. Logically, if Uvicorn stopped and nothing else listened on 10000, curl would get `Connection refused`, not an HTTP response. So **another process is listening on TCP 10000.**
+
+### Root cause: port conflict
+
+```bash
+lsof -nP -iTCP:10000 -sTCP:LISTEN
+# COMMAND   PID   USER
+# netdisk_s 746   liaoruoyan
+# TCP 127.0.0.1:10000 (LISTEN)
+```
+
+10000 was **netdisk_s ✅** (a netdisk daemon), not FastAPI (Uvicorn ❌). The actual path:
+
+```
+React → Vite :5173 → Proxy /api → localhost:10000 → netdisk_s → 400 Invalid request
+```
+
+### Why netdisk_s is so deceptive
+
+If nothing listened on 10000, Vite proxy would show `ECONNREFUSED` — backend-not-up is obvious. But `netdisk_s` happened to listen on 10000 and returned a **valid HTTP response** (`400`, `application/json`, `{"info":"Invalid request!"}`). From the frontend it looks like "FastAPI got the request but validation failed" — it wasn't. A classic **valid response from the wrong service**, harder to spot than connection refused.
+
+### Fix the conflict
+
+```bash
+kill 746
+lsof -nP -iTCP:10000 -sTCP:LISTEN   # empty
+uvicorn app.main:app --host 0.0.0.0 --port 10000
+# INFO: Uvicorn running on http://0.0.0.0:10000
+```
+
+### Final verification
+
+```bash
+curl -i http://localhost:10000/api/meta
+# HTTP/1.1 200 OK
+# server: uvicorn
+# {"units":[...],"max_pdfs":10,"max_file_mb":50}
+```
+
+The `server: uvicorn` header confirms both the correct schema and that the right service is answering. Restart `npm run dev` → `http://localhost:5173` works.
+
+---
+
+## Three Most Valuable Debugging Mindsets
+
+**1. An error message isn't necessarily the root cause.**
+
+- `No matching distribution found for fastapi` → root cause `SSL_CERTIFICATE_VERIFY_FAILED`
+- `meta.units.find` → root cause `/api/meta` returned wrong schema
+- `/api/meta 400` → root cause request hit the wrong service
+
+Always ask: **is this error a cause, or a symptom?**
+
+**2. Separate the layers.**
+
+This system has at least 9 layers: macOS/network → Python/OpenSSL → pip/deps → FastAPI/Uvicorn → TCP ports → Vite proxy → HTTP API → React state → UI. Mixed debugging (`blank → suspect Node → install nvm → no Xcode → fix Xcode`) drifts from the real problem. The disciplined path: `UI error → check API → API 400 → curl API past UI → still 400 → read API source → source can't 400 → confirm actual listener → wrong service`.
+
+**3. curl is decisive in full-stack debugging.**
+
+- `curl -I https://pypi.org` proved macOS HTTPS fine, Python SSL broken.
+- `curl -i http://localhost:10000/api/meta` proved React/Vite aren't the cause; the 10000 server itself returns 400.
+
+When a web project breaks, ask: **can I curl past the other layers and test directly?**
+
+**4. Comparing Expected vs Observed output is powerful.**
+
+```
+source returns: {"units":[...]}
+actual returns:  {"info":"Invalid request!"}
+```
+
+Don't keep analyzing `unit_options()` — that response wasn't produced by it. `Expected ≠ Observed → maybe the code I think is running isn't → check process / port / routing`. Vital in Docker / K8s / multi-backend / reverse-proxy setups.
+
+**5. Check the port before the business code.**
+
+For any backend port (`:8000 / :10000 / :3000`), before starting:
+
+```bash
+lsof -nP -iTCP:10000 -sTCP:LISTEN
+```
+
+If it returns `COMMAND PID ...`, confirm that PID is the program you intend to run. Doing this first would have skipped the entire Node/Xcode detour.
+
+---
+
+## Recommended Standard Startup Order
+
+**Backend:**
+
+```bash
+cd ~/Downloads/financial_report/backend
+source venv/bin/activate
+which python && which pip
+lsof -nP -iTCP:10000 -sTCP:LISTEN   # empty, then continue
+python -m uvicorn app.main:app --host 0.0.0.0 --port 10000
+curl -i http://localhost:10000/api/health
+curl -i http://localhost:10000/api/meta   # 200 OK, server: uvicorn
+```
+
+**Frontend:**
+
+```bash
+cd ~/Downloads/financial_report/frontend
+node -v   # v22.23.2
+npm run dev   # http://localhost:5173/
+```
+
+**Blank-screen playbook:**
+
+1. Console → first real error
+2. Network → any 4xx/5xx API request
+3. curl the API directly, past the frontend
+4. compare source return vs actual return
+5. `lsof` to confirm the port's listener is the expected process
+
+---
+
+*(This retrospective records one complete local debugging session: verifying each layer separately beats reinstalling the environment in circles.)*

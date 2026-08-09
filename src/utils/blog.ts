@@ -70,14 +70,29 @@ export function getAllPosts(): BlogPost[] {
         .replace(/\n+/g, ' ')
         .trim()
         .slice(0, 200) + '...'
+    const descriptionEn: string = (data.descriptionEn as string) || ''
+
+    // Split content into Chinese (zh) and English (en) bodies on the marker.
+    const LANG_SPLIT = '<!--lang:en-->'
+    let contentZh = markdown
+    let contentEn = ''
+    const splitIdx = markdown.indexOf(LANG_SPLIT)
+    if (splitIdx !== -1) {
+      contentZh = markdown.slice(0, splitIdx).trim()
+      contentEn = markdown.slice(splitIdx + LANG_SPLIT.length).trim()
+    }
 
     return {
       slug,
       title,
+      titleEn: (data.titleEn as string) || undefined,
       date,
       excerpt: description,
+      excerptEn: descriptionEn,
       tags,
       content: markdown,
+      contentZh,
+      contentEn,
       readingTime: calculateReadingTime(markdown),
     }
   })

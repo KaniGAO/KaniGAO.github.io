@@ -2,9 +2,11 @@ import { useState, useMemo } from 'react'
 import PageHeader from '@/components/PageHeader'
 import { Link } from 'react-router-dom'
 import { getSortedPosts } from '@/utils/blog'
+import type { BlogLang } from '@/types'
 
 export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [lang, setLang] = useState<BlogLang>('zh')
   const posts = useMemo(() => getSortedPosts(), [])
 
   const filtered = useMemo(() => {
@@ -32,6 +34,32 @@ export default function Blog() {
           title="Blog"
           subtitle="Thoughts on quantitative finance, risk management, and technology."
         />
+
+        {/* Language Toggle */}
+        <div className="mb-8 flex justify-center">
+          <div className="flex overflow-hidden rounded-lg border border-slate-200 text-sm font-medium dark:border-slate-700">
+            <button
+              onClick={() => setLang('zh')}
+              className={`px-4 py-1.5 transition-colors ${
+                lang === 'zh'
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-transparent text-slate-500 hover:text-primary-500'
+              }`}
+            >
+              中文
+            </button>
+            <button
+              onClick={() => setLang('en')}
+              className={`px-4 py-1.5 transition-colors ${
+                lang === 'en'
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-transparent text-slate-500 hover:text-primary-500'
+              }`}
+            >
+              English
+            </button>
+          </div>
+        </div>
 
         {/* Search */}
         <div className="mx-auto mb-10 max-w-md">
@@ -72,7 +100,12 @@ export default function Blog() {
 
         {/* Posts Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((post) => (
+          {filtered.map((post) => {
+            const cardTitle =
+              lang === 'en' && post.titleEn ? post.titleEn : post.title
+            const cardExcerpt =
+              lang === 'en' && post.excerptEn ? post.excerptEn : post.excerpt
+            return (
             <Link
               key={post.slug}
               to={`/blog/${post.slug}`}
@@ -80,10 +113,10 @@ export default function Blog() {
             >
               <time className="text-xs text-slate-500">{post.date}</time>
               <h2 className="mt-2 mb-3 text-lg font-semibold group-hover:text-primary-500 transition-colors line-clamp-2">
-                {post.title}
+                {cardTitle}
               </h2>
               <p className="mb-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 line-clamp-3">
-                {post.excerpt}
+                {cardExcerpt}
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">{post.readingTime}</span>
@@ -99,7 +132,8 @@ export default function Blog() {
                 </div>
               </div>
             </Link>
-          ))}
+            )
+          })}
         </div>
 
         {filtered.length === 0 && (

@@ -42,13 +42,23 @@ export interface Skill {
   category: 'language' | 'framework' | 'tool' | 'other'
 }
 
+export type BlogLang = 'zh' | 'en'
+
 export interface BlogPost {
   slug: string
   title: string
+  /** English title, used when the reader switches to EN. */
+  titleEn?: string
   date: string
   excerpt: string
+  /** English excerpt, used when the reader switches to EN. */
+  excerptEn?: string
   tags: string[]
   content: string
+  /** Chinese body (before the <!--lang:en--> split marker). */
+  contentZh: string
+  /** English body (after the <!--lang:en--> split marker). Empty if monolingual. */
+  contentEn: string
   readingTime: string
 }
 

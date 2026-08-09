@@ -1,8 +1,10 @@
 ---
 title: "如何用 CodeBuddy 两天从 0 到 1 搭一个投资复盘 Agent"
+titleEn: "Building an Investment Review Agent from 0 to 1 in Two Days with CodeBuddy"
 tags: ["AI Agent", "Dify", "FastAPI", "CodeBuddy", "Tushare", "Feishu", "Quant"]
 date: "2026-05-10"
 description: "记录用 CodeBuddy 作为 AI 编程搭档，两天内完成投资复盘 AI Agent 的全流程：从需求拆解、FastAPI 数据服务、Dify 工作流编排到飞书自动推送，包含 12 个任务的实战踩坑经验。"
+descriptionEn: "How I used CodeBuddy as an AI coding partner to ship an investment-review agent in two days — from scoping and a FastAPI data service to a Dify workflow and Feishu push, with 12 hands-on tasks and hard-won lessons."
 githubUrl: "https://github.com/KaniGAO/pm-review-ai-agent"
 ---
 
@@ -135,3 +137,101 @@ Dify 的定时运行依赖 `worker_beat`。设置 Cron 为 `0 30 7 * * 1-5`（UT
 - 完全数据不出网：将 DeepSeek 换成本地部署的模型（如 Ollama + Qwen），彻底杜绝持仓外流。
 
 不需要大团队，不需要半年工期。用 Dify 做编排，用 CodeBuddy 做搭档，两天时间就可以让 AI Agent 真正"上岗"。
+
+<!--lang:en-->
+
+# Building an Investment Review Agent from 0 to 1 in Two Days with CodeBuddy
+
+## 1. Decoding the Requirement: From Vague Goal to a Real MVP
+
+In finance, many analysts repeat a tedious ritual after every close: export data from the terminal, paste it into Excel, manually tally each PM's (Portfolio Manager's) daily P&L and leader-stock exposure, then squeeze out a written review. It is slow, laborious, and error-prone.
+
+That pain point is what I targeted. The AI agent needs to:
+
+- Automatically fetch market-wide leader-stock performance by sector after each close;
+- Combine it with several PMs' holdings to compute each PM's return, excess return, and leader exposure;
+- Have an LLM generate a 200–300 word professional review;
+- Push the report to a Feishu group on schedule.
+
+Even without a company Wind account or real PM data, you can validate the whole pipeline with a free data source and simulated holdings. Later, swapping only the data interface — with zero logic changes — upgrades it smoothly to production.
+
+## 2. Architecture: Orchestrate, Don't Build Software
+
+Many people hear "AI agent" and imagine building a UI app. The lightest approach is actually to **let the AI orchestrate existing capabilities**. The design has four layers:
+
+```
+┌───────────────────────────────────┐
+│  Touchpoint layer                  │
+│  Feishu/WeCom bot | Dify chat UI   │
+└──────────────┬────────────────────┘
+               │ Webhook
+┌──────────────▼────────────────────┐
+│  AI orchestration (Dify)           │
+│  Workflow / Code node / LLM node   │
+└──────────────┬────────────────────┘
+               │ HTTP (internal API)
+┌──────────────▼────────────────────┐
+│  Data service (FastAPI)            │
+│  /leaders /pm /market endpoints    │
+└──────────────┬────────────────────┘
+               │
+┌──────────────▼────────────────────┐
+│  Data source layer                 │
+│  Tushare(demo) / Wind(prod) / mock │
+└───────────────────────────────────┘
+```
+
+All sensitive data stays local. The demo uses free Tushare quotes and virtual PM holdings; production only swaps the data interface to Wind and an internal DB, leaving every other node untouched.
+
+## 3. Tech Stack
+
+- **Dify**: self-hosted, provides Chatflow orchestration, Code/LLM nodes, and scheduled triggers — no frontend needed.
+- **FastAPI**: a middleware data service wrapping quotes, holdings, and index endpoints, with token auth.
+- **Tushare Pro**: free A-share daily bars, sector classification, and money flow — ideal for a demo.
+- **DeepSeek**: the LLM node model; stable review text, and no compliance risk since the demo uses simulated data.
+- **Feishu custom bot**: pushes card messages via webhook with Markdown support, at zero cost.
+- **CodeBuddy**: the AI coding partner throughout — scaffolding, debugging, prompt design, and docs.
+
+## 4. Two-Day Build Log: 12 Tasks, One by One
+
+I broke the project into 12 minimal executable tasks; CodeBuddy was the step-by-step guide for each.
+
+**Day 1 — scaffold and data**
+
+1. *Project init & Dify local deploy*: Docker Compose up, ensuring `worker_beat` runs for later scheduling.
+2. *FastAPI skeleton*: `main.py`, `auth.py`, routers. CodeBuddy generated the bootstrap and token-auth middleware; I only defined routes.
+3. *Mock data*: with no real holdings, CodeBuddy wrote `data_simulator.py` virtualizing five PMs (PM_Alpha–PM_Epsilon) with self-consistent styles vs. leader moves, outputting `leaders_demo.json` and `pm_demo.json`.
+4. *Leader-stock API*: `GET /api/v1/leaders` first reads mock JSON, then CodeBuddy added real SW industry leaders via Tushare (top 3 by 20-day average turnover) — names like Shenghe Jingwei appeared.
+5. *PM holdings & performance APIs*: `/api/v1/pm/positions` and `/api/v1/pm/performance` return mock data shaped exactly for the downstream Code node.
+6. *Index API + token auth*: `/api/v1/market/index` returns CSI 300 / CSI 500 moves; token middleware enforced on all routes from the demo stage.
+
+**Day 2 — ranking, LLM, push, scheduling**
+
+7. *First Dify Code node (data fetch)*: the network gotcha — inside the Dify container `127.0.0.1` means the container itself. CodeBuddy immediately said use `host.docker.internal`.
+8. *Second Code node (metrics)*: computes excess-return ranking, top-5 leaders, best/worst PMs, and trend hints into `analysis_table`.
+9. *LLM node config (the key battle)*: passing `analysis_table` (Object) straight into the LLM node returned "data not covered" — Dify's LLM node only accepts String input. Fix: insert a Template node using `{{ arg1 }}` to serialize the object to JSON, which the LLM references as `template.output`. DeepSeek then produced a 200–300 word data-faithful review.
+10. *Report assembly + Feishu push*: a Code node joins `analysis_table` and the review into Markdown with `date.today()`. The push node kept erroring `output result is missing` until CodeBuddy pointed out I'd forgotten to declare the `push_result` output variable.
+11. *Scheduling*: Cron `0 30 7 * * 1-5` (UTC = 15:30 Beijing), with the first Code node auto-resolving `trade_date` and falling back to last Friday on weekends.
+12. *Packaging & docs*: README, Mermaid architecture diagram, screenshots, exported Dify DSL — CodeBuddy generated the templates.
+
+## 5. What Role Did CodeBuddy Play?
+
+Far beyond "code completion," it acted as architect, debugger, and documentation writer:
+
+- **Task breakdown**: precise steps down to button and variable names.
+- **Code generation**: FastAPI endpoints, Dify Code logic, data processing — it drafted, I fine-tuned.
+- **Problem localization**: quick root-cause and fixes for network/config and type mismatches.
+- **Security reminders**: "don't commit `.env`," token masking — building strict habits before delivery.
+- **Docs**: README template, Mermaid diagram, even this retrospective's outline.
+
+**The best human–AI collaboration: humans define *what*, AI handles *how* and *what's missing*.**
+
+## 6. Final Result
+
+- A Feishu card "Daily PM Review Report" lands at 15:30 every trading day: market overview, top-5 sector leaders (real quotes), PM ranking table (excess return, leader match, holdings), and a 200–300 word AI review.
+- The Dify chat UI supports follow-ups like "Why did PM_Epsilon have the highest excess return today?"
+- The GitHub repo has full source, DSL, README, and screenshots for one-click reproduction.
+
+## 7. The Demo Is Only the Start
+
+The architecture upgrades seamlessly to production: swap the FastAPI fetch function for Wind; replace mock JSON with an internal DB; and for full data isolation, swap DeepSeek for a local model (e.g. Ollama + Qwen). No big team, no six-month timeline — with Dify for orchestration and CodeBuddy as partner, two days put the agent to work.

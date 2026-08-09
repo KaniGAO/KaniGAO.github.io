@@ -1,8 +1,10 @@
 ---
 title: "财报填表 Agent：一次「Word 进 Word 出」的排错全过程"
+titleEn: "The Financial-Report-Filling Agent: Debugging a 'Word In, Word Out' Failure End to End"
 tags: ["AI Agent", "Python", "FastAPI", "文档自动化", "部署"]
 date: "2026-08-04"
 description: "记录构建一个把 Excel 三大报表自动填进 Word 模板的财务 Agent：从架构选型、最关键的「Word 进 Word 出」Bug 根因、自适应解析层的设计原则，到用 Render 零运维部署上线全过程。"
+descriptionEn: "Building a finance agent that auto-fills Excel financial statements into a Word template — from architecture and the root cause of the critical 'Word in, Word out' bug, to an adaptive parser design and zero-ops deployment on Render."
 githubUrl: "https://github.com/KaniGAO/KaniGAO.github.io"
 ---
 
@@ -112,3 +114,112 @@ parse_docx（解析Word）→ parse_excel（解析Excel）→ matcher（模糊�
 线上地址：https://fin-report-agent.onrender.com/
 
 *（本记录为项目全程的经验沉淀，供后续迭代、复现、或写技术博客使用。）*
+
+<!--lang:en-->
+
+# The Financial-Report-Filling Agent: Debugging a 'Word In, Word Out' Failure End to End
+
+Finance analysts writing reports often start from a **Word template** — empty financial tables where the first column is the line-item name and the header is the year — and must **manually copy** the real numbers from Excel's three statements (balance sheet, income statement, cash-flow statement) into Word. Repetitive, error-prone, time-consuming.
+
+The goal is simple: upload 1 Word template + up to 3 Excel statements → the system auto-fills numbers by "line-item name + year" → download the filled `.docx`, **preserving the original template styling**.
+
+## Stack & Architecture
+
+A **local web app** (full-stack): backend computes, frontend interacts, and the backend ultimately serves the frontend's static files from the same origin for one-click cloud deploy.
+
+**Backend:**
+
+| Module | Choice | Role |
+|------|------|------|
+| Web framework | FastAPI | `/api/analyze`, `/api/generate/{session_id}` |
+| Doc parsing | python-docx | read/write Word tables |
+| Excel parsing | openpyxl | read Excel data |
+| Data handling | pandas | table wrangling |
+| Fuzzy matching | rapidfuzz | line-item similarity (`ratio` / `token_sort_ratio`) |
+| Validation | pydantic | request/response models |
+
+**Core pipeline (5 steps):**
+
+```
+parse_docx → parse_excel → matcher (fuzzy + synonym/zh-en map)
+→ filler (build fill_plan) → fill_docx (write & export)
+```
+
+**Matching rules (the core capability):**
+
+1. **Normalize**: full-to-half width, trim, unify brackets, strip numbering (`一、` `(一)`) and noise (`以-号填列`, `（合并）`)
+2. **Synonyms**: `营业总收入→营业收入`, `股东权益合计→所有者权益合计`, centralized in `normalize.py`'s `SYNONYMS`
+3. **Fuzzy match**: rapidfuzz best-of-two algorithms, threshold 85
+4. **Zh/En swap**: `货币资金 ↔ Cash and Cash Equivalents`, etc.
+5. **Conservative**: fill only when **both** name and year match; below threshold → mark "leave blank"
+
+Frontend: React 18 + Vite + TS + Tailwind — upload → show a match checklist (what fills, what stays blank) → download, with a zh/en toggle.
+
+## The Critical Bug: "Word In, Word Out"
+
+I uploaded the user's "parent-company balance sheet" template. The downloaded `.docx` was **identical to the original** — not a single number filled in.
+
+### Root Cause
+
+The old `docx_parser.parse_docx` made two **hardcoded assumptions** the real template broke:
+
+1. **It only scanned the first 3 rows for the year header.** But the template is: row 1 title → row 2 unit → row 3 metadata (report period / statement type) → **row 4 is the real year header**. Scanning 3 rows found no year, so the table was judged "no statement" and skipped.
+2. **It assumed the name is in column 0.** The user's column 0 is an index/title slot; the name can be elsewhere.
+3. It also mistook metadata rows / section titles like `报告期`, `报表类型`, `流动资产：` for financial items, polluting the match.
+
+Result: empty `fill_plan` → `fill_docx` exported as-is → "Word in, Word out."
+
+### Fix (only the parser changed; matching/filling untouched)
+
+Rewrote `docx_parser.parse_docx`:
+
+- Scan the **whole table** for the year header, picking the row with the most 4-digit years (row 4 wins).
+- Support **multiple stacked statements** in one table (split by year headers).
+- **Auto-detect the label column**: among candidate columns left/right of the year columns, pick the one with the most text (non-numeric) cells — **tolerant of "index + name" layouts**.
+- Auto-**filter metadata rows** and section-title rows.
+
+Hardened `excel_parser`: accept only **numeric** cells; skip non-numeric text like `一季报/母公司报表`.
+
+> **The parser must be adaptive; the business layer must stay conservative.** Never hardcode file-format positions (which row holds the year, which column holds the name) — use heuristics. But when filling, prefer leaving blanks over guessing. Keep metadata whitelists and label-column heuristics in a few helper functions so **new formats need one new rule, not a special branch per template**.
+
+## Testing & Validation
+
+Two scripts (pytest wasn't installed then):
+
+- `tests/test_matcher.py`: matcher unit tests
+- `tests/test_pipeline.py`: end-to-end (parse → match → fill → verify)
+
+For this bug I added a **real-user-format** fixture `realistic_template.docx` (year row at line 4 + report-period metadata + section titles) with a matching Excel. Assertions: 1 table recognized, `报告期/报表类型/流动资产：` filtered, all matched, correct fills (货币资金 2026=44.28 / 2025=10.60 / 2024=23.48 / 2023=18.90).
+
+**Result**: no regression on the original fixture (ALL PASS), the user-format fixture also ALL PASS, and `npm run build` passed.
+
+## Deployment: Render for Zero Ops
+
+| Option | Verdict |
+|------|------|
+| GitHub Pages | ❌ this is a full-stack app with a backend |
+| Self-hosted server | ❌ cost + ops burden |
+| Render / Railway | ✅ Dockerfile support, free tier, push-to-deploy |
+
+Why Render: the project already had a multi-stage `Dockerfile` (build frontend, then run uvicorn serving both); free tier; **push to `main` deploys**; `render.yaml` declarative config.
+
+Added an `/api/health` endpoint as the "is the update live?" criterion — old code returned 404, new code returns `{"status":"ok"}`, verifiable with `curl`.
+
+The free tier has **cold starts**: sleeps after 15 idle minutes; ~30s wake-up on the next request.
+
+## Making It Work Out of the Box
+
+To demo immediately, I scraped **Kweichow Moutai (600519) real three statements for 2022–2024** into Excel. The template download site needed login, so I **programmatically generated a professional financial-analysis report template** (cover → TOC → three empty statement tables) with year columns matching the Excel exactly. Rather than fight a login wall, generate a format-fitting template — more controllable.
+
+## Lessons
+
+1. **Parse user files with scanning + heuristics, never hardcoded positions.** The biggest pitfall, and the key design principle.
+2. **Stay conservative in matching**: leave blanks rather than guess — the lifeline of a finance tool.
+3. **Fix the minimal necessary layer**: only `docx_parser`/`excel_parser` changed; matching/filling/dictionary untouched — low risk.
+4. **Add real fixtures + assertions for new formats** — far more reliable than "I think it's fixed."
+5. **Quantify the deploy criterion**: `/api/health` going 404→ok objectively proves "update is live."
+6. **Free hosting → Render**: Dockerfile projects deploy on push, zero ops, great for personal tools; cold start is the only cost.
+
+Live: https://fin-report-agent.onrender.com/
+
+*(This record is the project's accumulated experience, for later iteration, reproduction, or a tech blog.)*

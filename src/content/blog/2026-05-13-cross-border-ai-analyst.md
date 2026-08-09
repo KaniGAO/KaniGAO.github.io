@@ -1,8 +1,10 @@
 ---
 title: "从想法到原型:我如何在8小时内搭建一个跨境电商经营分析 AI 员工"
+titleEn: "From Idea to Prototype: Building a Cross-border E-commerce Analyst AI Agent in 8 Hours"
 tags: ["AI Agent", "Dify", "FastAPI", "Cross-border E-commerce", "Feishu", "Agentic Workflow"]
 date: "2026-05-13"
 description: "记录从零搭建跨境电商AI分析员工的全过程，包括Dify工作流设计、数据模拟、LLM稳定输出技巧、飞书推送踩坑经验等实战细节。"
+descriptionEn: "A full walkthrough of building a cross-border e-commerce analyst AI agent from scratch — Dify workflow design, data simulation, techniques for stable LLM output, and hard-won lessons on Feishu push."
 githubUrl: "https://github.com/KaniGAO/cross-border-ai-analyst-poc"
 ---
 
@@ -85,3 +87,85 @@ Dify 的可视化拖拽上手很快，但开始写 Code 节点的逻辑时，问
 这个项目从头到尾花了大约 8 个小时。最深的体会是：**AI Native 不只是会调用几个 API，而是能快速定义能力边界、把模糊需求拆解为可执行的 Skill 链条、用低代码工具以最低成本验证可行性，并始终围绕"解决真实问题"来设计一切。**
 
 不是写一份漂亮的文档，是造一个"活"的员工。
+
+<!--lang:en-->
+
+# From Idea to Prototype: Building a Cross-border E-commerce Analyst AI Agent in 8 Hours
+
+My first instinct was a list of fancy Skill names — "multi-source heterogeneous data fusion," "intelligent profit attribution engine," and so on. But by the fourth I was stuck: the words sounded impressive yet had no logical relationship, and explained nothing about what this AI employee actually does each day.
+
+So I flipped the question: if I were the boss, what do I most want in the Feishu group every morning? Not a pile of data, but answers to three questions: **how much did we earn yesterday, where did we lose money, and what should we restock today?**
+
+Working backward from need, a Skill shouldn't be a feature checklist but an automated workflow. Each Skill consumes the previous stage's output and produces the next stage's input — together forming the agent's full loop. That is exactly the core idea of Agentic Workflow: letting AI autonomously run the whole process from data acquisition to conclusion delivery, rather than acting as a one-command-at-a-time tool.
+
+With that, I settled on 7 core Skills: data fetch → metrics → profit/loss attribution → inventory assessment → morning report → restock advice → result push, and built the workflow skeleton with 8 Dify nodes.
+
+## Phase 1: Foundations — Simple Looking, Tricky Beneath
+
+### Making the data feel real
+
+A Python script generated mock orders across Amazon, TikTok Shop, and 1688. The first pitfall was data quality: all-profit orders looked pretty but unreal. Real businesses lose money too, so I added low-price promo orders simulating pricing mistakes, pushing margins negative. That became the most convincing anomaly material — one order at -374% margin was correctly flagged "urgent review needed."
+
+### The weird Dify-local-API problem
+
+The GitHub repo and local API went smoothly; I wrote a FastAPI `/api/daily_data` endpoint reading CSV by date. But pointing Dify's HTTP Request node at `http://localhost:8000` timed out endlessly.
+
+The fix: with Dify on Docker, its `localhost` is the container itself, not the host. Switching to the host's LAN IP worked. Lesson: in a prototype, clear the most basic "is the network even up?" question before any clever design.
+
+## Phase 2: The Dify Core — The Brain-burning Part
+
+### Data-passing details
+
+Dify's drag-and-drop is quick to learn, but the Code node logic exposed real issues. The HTTP response JSON was deeply nested; the Code node had to extract the innermost `orders` array. The first run failed on an undefined variable — a wrong variable path. Hand-typed Dify variable references fail 9 times out of 10; I switched to mouse-picking paths and never got stuck on spelling again.
+
+### Forcing clean precision
+
+Profit summaries once showed `33.47999999999999` — ugly and unprofessional. I forced `round(x, 2)` on all key numbers in the Code node. Minor, but it made the table clean.
+
+### Stabilizing LLM output
+
+For a consistent boss-facing report, I wrote a strict System Prompt (must include total profit, order count, per-platform comparison, lowest-margin order, conclusion) and set Temperature to 0.2. Still, early runs occasionally dropped the table format. I rewrote the Prompt to mandate a Markdown table with explicit columns: SKU, order count, turnaround days, priority, suggested restock. The first run after that correctly flagged the worst-loss platform and advised "intervene on pricing now."
+
+## Phase 3: Feishu Push — The Most Torturous Pit
+
+**I thought the skeleton meant success. The real torture was just beginning.**
+
+Following the Feishu bot docs, I crafted a rich `post` message with formatted Markdown tables. Dify logged HTTP 200, yet the group stayed silent.
+
+Painful debugging: a plain `text` message arrived — so address and network were fine. Switching back to `post` and inspecting the raw HTTP response showed `{"code":10002,"msg":"not support markdown tag"}`. The bot simply doesn't support Markdown tags.
+
+### A tragedy caused by one double quote
+
+Abandoning rich text, I used plain text. But after assembling the report in a Template node and stuffing it into the HTTP node's JSON body, Feishu returned `{"code":10208,"msg":"text require"}`.
+
+Format and field names were fine. Character-by-character inspection of the JSON body revealed the long text contained newlines while the whole block wasn't wrapped in double quotes. The JSON parser ended the string at the first newline, discarding everything after as illegal tokens, and threw away the whole body.
+
+Wrapping it in double quotes fixed everything. One character cost me nearly an hour.
+
+The final push was plain text with spaces and dividers mimicking a table. Less pretty, but complete and correct, with sound LLM analysis. When the long daily report popped into the Feishu group in the small hours, the feeling of the full chain finally working is hard to describe.
+
+## Potholes and Fixes
+
+| Pitfall | Fix |
+|----|------|
+| Mock data all profitable, unrealistic | Add low-price promo orders with negative margins |
+| Dify can't reach localhost API | Use the host's LAN IP |
+| Code-node variable refs often mistyped | Always mouse-pick variable paths |
+| LLM unstable, sometimes drops table | Stronger Prompt mandating format and columns |
+| Feishu `post` rejects Markdown tags | Use `text` format with spaces/dividers |
+| Unquoted long text breaks JSON parse | Inspect char-by-char, quote the text block |
+| Float `33.47999999999999` | Force `round(x, 2)` in Code node |
+
+## If I did it again
+
+Test the Feishu channel with the simplest `text` message first instead of copying `post` from docs — prove the chain works, then optimize content.
+
+Export the Dify DSL earlier for version rollback and backup.
+
+Validate the JSON body in a linter before sending. One unquoted newline isn't worth an hour.
+
+## In Closing
+
+The project took about 8 hours end to end. The deepest takeaway: **AI Native isn't just calling a few APIs — it's rapidly defining capability boundaries, decomposing vague needs into executable Skill chains, validating feasibility at lowest cost with low-code tools, and designing everything around solving real problems.**
+
+Not writing a pretty document — building a "living" employee.

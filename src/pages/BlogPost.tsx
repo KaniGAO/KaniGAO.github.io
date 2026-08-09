@@ -1,17 +1,25 @@
+import { useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import { getPostBySlug, getAllPosts } from '@/utils/blog'
+import type { BlogLang } from '@/types'
+import type { BlogPost as BlogPostType } from '@/types'
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>()
   const post = slug ? getPostBySlug(slug) : undefined
+  const [lang, setLang] = useState<BlogLang>('zh')
 
   if (!post) {
     // If post not found, redirect to blog list
     return <Navigate to="/blog" replace />
   }
+
+  const isBilingual = post.contentEn.trim().length > 0
+  const title = lang === 'en' && post.titleEn ? post.titleEn : post.title
+  const body: BlogPostType = post
 
   return (
     <article className="py-16">
@@ -35,17 +43,44 @@ export default function BlogPost() {
             <span className="text-sm text-slate-500">{post.readingTime}</span>
           </div>
 
-          <h1 className="text-3xl font-bold sm:text-4xl">{post.title}</h1>
+          <h1 className="text-3xl font-bold sm:text-4xl">{title}</h1>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-500"
-              >
-                #{tag}
-              </span>
-            ))}
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-primary-500/10 px-3 py-1 text-xs font-medium text-primary-500"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+
+            {isBilingual && (
+              <div className="flex shrink-0 overflow-hidden rounded-lg border border-slate-200 text-xs font-medium dark:border-slate-700">
+                <button
+                  onClick={() => setLang('zh')}
+                  className={`px-3 py-1.5 transition-colors ${
+                    lang === 'zh'
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-transparent text-slate-500 hover:text-primary-500'
+                  }`}
+                >
+                  中
+                </button>
+                <button
+                  onClick={() => setLang('en')}
+                  className={`px-3 py-1.5 transition-colors ${
+                    lang === 'en'
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-transparent text-slate-500 hover:text-primary-500'
+                  }`}
+                >
+                  EN
+                </button>
+              </div>
+            )}
           </div>
         </header>
 
@@ -58,7 +93,7 @@ export default function BlogPost() {
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight]}
           >
-            {post.content}
+            {lang === 'en' ? body.contentEn : body.contentZh}
           </ReactMarkdown>
         </div>
 
