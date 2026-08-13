@@ -134,4 +134,21 @@ export const projects: Project[] = [
     toolStatus: 'local',
     toolIcon: 'news',
   },
+  {
+    id: 'foodpanda-menu-to-excel',
+    title: 'foodpanda Menu → Excel',
+    description:
+      'Paste any foodpanda restaurant link, dynamically pick the columns you want, and one-click download the menu as an Excel price sheet — live web tool, no login or cookie needed.',
+    tags: [
+      { label: 'FastAPI', kind: 'tech' },
+      { label: 'React', kind: 'tech' },
+      { label: 'Web Scraping', kind: 'domain' },
+    ],
+    category: 'fullstack',
+    githubUrl: 'https://github.com/KaniGAO/foodpanda-menu-to-excel',
+    liveUrl: 'https://foodpanda-menu-to-excel.onrender.com',
+    roles: ['tool'],
+    toolStatus: 'open-source',
+    toolIcon: 'file',
+  },
 ]
